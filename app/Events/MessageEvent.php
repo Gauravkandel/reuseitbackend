@@ -22,18 +22,12 @@ class MessageEvent implements ShouldBroadcast
         public string $message,
         public $roomId,
         public string $timeago,
-        public $sender_id,
+        public $senderId
     ) {
     }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
     public function broadcastOn()
     {
-        return ['user.' . $this->roomId];
+        return ['user'];
     }
 
     public function broadcastAs()

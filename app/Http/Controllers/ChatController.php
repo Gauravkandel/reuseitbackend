@@ -16,9 +16,7 @@ class ChatController extends Controller
     }
     public function message(Request $request)
     {
-
         $senderId = auth()->user()->id;
-        $sender_id = auth()->user()->id; // Assuming the sender ID is always 1 for simplicity
         $receiverId = $request->id; // Assuming the receiver ID is always 2 for simplicity
         $roomId = $this->createRoomId($senderId, $receiverId);
         $username = auth()->user()->name;
@@ -31,7 +29,7 @@ class ChatController extends Controller
         $data = message::Where('sender_id', $senderId)->Where('receiver_id', $receiverId)->latest()->first();
         $createdAt = Carbon::parse($data->created_at);
         $timeago = $createdAt->diffForHumans();
-        event(new MessageEvent($username, $request->input('message'), $roomId, $timeago, $sender_id));
+        event(new MessageEvent($username, $request->input('message'), $roomId, $timeago, $senderId));
         return response()->json(['status' => 'Message sent successfully']);
     }
     public function getMessages($receiverId)
