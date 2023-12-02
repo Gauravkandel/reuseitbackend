@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\MessageEvent;
+use App\Events\chatEvent;
 use App\Models\message;
 use App\Models\User;
 use Carbon\Carbon;
@@ -29,7 +29,7 @@ class ChatController extends Controller
         $data = message::Where('sender_id', $senderId)->Where('receiver_id', $receiverId)->latest()->first();
         $createdAt = Carbon::parse($data->created_at);
         $timeago = $createdAt->diffForHumans();
-        event(new MessageEvent($username, $request->input('message'), $roomId, $timeago, $senderId));
+        event(new chatEvent($username, $request->input('message'), $roomId, $timeago, $senderId));
         return response()->json(['status' => 'Message sent successfully']);
     }
     public function getMessages($receiverId)
