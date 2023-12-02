@@ -16,20 +16,20 @@ class ChatController extends Controller
     }
     public function message(Request $request)
     {
-        $senderId = auth()->user()->id;
+        $sender_id = auth()->user()->id;
         $receiverId = $request->id; // Assuming the receiver ID is always 2 for simplicity
-        $roomId = $this->createRoomId($senderId, $receiverId);
+        $roomId = $this->createRoomId($sender_id, $receiverId);
         $username = auth()->user()->name;
         $message = new message();
-        $message->sender_id = $senderId;
+        $message->sender_id = $sender_id;
         $message->receiver_id = $receiverId;
         $message->username = $username;
         $message->message = $request->message;
         $message->save();
-        $data = message::Where('sender_id', $senderId)->Where('receiver_id', $receiverId)->latest()->first();
+        $data = message::Where('sender_id', $sender_id)->Where('receiver_id', $receiverId)->latest()->first();
         $createdAt = Carbon::parse($data->created_at);
         $timeago = $createdAt->diffForHumans();
-        event(new chatEvent($username, $request->input('message'), $roomId, $timeago, $senderId));
+        event(new chatEvent($username, $request->input('message'), $roomId, $timeago, $sender_id));
         return response()->json(['status' => 'Message sent successfully']);
     }
     public function getMessages($senderId, $receiverId)
