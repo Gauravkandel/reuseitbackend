@@ -12,7 +12,7 @@ class ChatController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', ['except' => ['getMessages']]);
     }
     public function message(Request $request)
     {
@@ -32,9 +32,8 @@ class ChatController extends Controller
         event(new chatEvent($username, $request->input('message'), $roomId, $timeago, $senderId));
         return response()->json(['status' => 'Message sent successfully']);
     }
-    public function getMessages($receiverId)
+    public function getMessages($senderId, $receiverId)
     {
-        $senderId = auth()->user()->id;
         $messages = Message::where(function ($query) use ($senderId, $receiverId) {
             $query->where('sender_id', $senderId)
                 ->where('receiver_id', $receiverId);
@@ -52,7 +51,6 @@ class ChatController extends Controller
         // Ensure a consistent order for the IDs to prevent duplicates
         $sortedIds = [$user1, $user2];
         sort($sortedIds);
-
         // Concatenate the sorted user IDs
         return implode('_', $sortedIds);
     }
