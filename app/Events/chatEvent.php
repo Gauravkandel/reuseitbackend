@@ -22,7 +22,7 @@ class chatEvent implements ShouldBroadcast
         public string $message,
         public $roomId,
         public string $timeago,
-        public $sender_id,
+        public $senderId,
     ) {
         //
     }
