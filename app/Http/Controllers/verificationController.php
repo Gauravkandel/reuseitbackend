@@ -18,9 +18,9 @@ class verificationController extends Controller
         $otp = rand(9999, 99999);
         $message = 'Your ReUseIt Seller Verification code is ' . $otp;
         try {
-            $accountSid = "ACd64800b5fb8b0e0e92f4da5da51ec87d";
-            $authToken = "542393530f2a292c5717586a5f8810b4";
-            $fromNumber = "+16788947857";
+            $accountSid = "ACd1065f5faf96c3b98197c4cdba16160e";
+            $authToken = "b370020fed5a0114d59e9c68ec9cb2d1";
+            $fromNumber = "+15733194051";
             // Check if credentials are present
             if (!$accountSid || !$authToken || !$fromNumber) {
                 throw new Exception("Twilio credentials are missing");
