@@ -5,6 +5,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SellProductController;
+use App\Http\Controllers\verificationController;
 use App\Http\Controllers\ViewProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,5 +50,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/status', [DashboardController::class, 'Soldout']);
     //For chat application
     Route::post('/messages', [ChatController::class, 'message']);
+    //phone verification
+    Route::post('/sendotp', [verificationController::class, 'SendSms']);
 });
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);

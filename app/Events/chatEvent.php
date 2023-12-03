@@ -34,7 +34,7 @@ class chatEvent implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        return ['user'];
+        return ['user.' . $this->roomId];
     }
     public function broadcastAs()
     {
