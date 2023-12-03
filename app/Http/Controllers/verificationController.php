@@ -36,7 +36,7 @@ class verificationController extends Controller
                 throw new Exception("Failed to send SMS. Twilio status: " . $message->status);
             }
 
-            return response()->json(["success" => "SMS sent successfully"])->cookie('auth-token', "gaurav", 60);;
+            return response()->json(["success" => "SMS sent successfully"]);
         } catch (\Exception $e) {
             return response()->json(["error" => "error occurred " . $e->getMessage()]);
         }
