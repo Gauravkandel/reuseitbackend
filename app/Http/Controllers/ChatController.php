@@ -38,7 +38,7 @@ class ChatController extends Controller
     public function getMessages($senderId, $receiverId)
     {
         $senderdata = User::find($senderId);
-        $receiverdata = User::find($receiverId);
+        $receiverdata = User::find($receiverId)->profile_image;
 
         $messages = Message::where(function ($query) use ($senderId, $receiverId) {
             $query->where('sender_id', $senderId)
@@ -49,9 +49,9 @@ class ChatController extends Controller
         })->orderBy('created_at', 'asc')->get();
         $messages->each(function ($message) {
             $message->timeago = Carbon::parse($message->created_at)->diffForHumans();
-            $message->sender_image = auth()->user()->Profile_image;
-            $message->receiver_image = $receiverdata->Profile_image;
         });
+        $messages->sender_image = auth()->user()->Profile_image;
+        $messages->receiver_image = $receiverdata;
         return response()->json(['messages' => $messages]);
     }
     public function createRoomId($user1, $user2)
