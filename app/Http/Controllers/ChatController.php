@@ -7,6 +7,7 @@ use App\Models\message;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
@@ -53,6 +54,31 @@ class ChatController extends Controller
             $message->receiver_image = $receiverdata->Profile_image;
         });
         return response()->json(['messages' => $messages]);
+    }
+    public function getUsers()
+    {
+        $authUser = auth()->user();
+
+        $latestMessages = message::whereIn('id', function ($query) use ($authUser) {
+            $query->select(DB::raw('MAX(id)'))
+                ->from('messages')
+                ->where(function ($subquery) use ($authUser) {
+                    $subquery->where('sender_id', $authUser->id)
+                        ->orWhere('receiver_id', $authUser->id);
+                })->groupBy(DB::raw('CASE WHEN sender_id = ' . $authUser->id . ' 
+                THEN receiver_id ELSE sender_id END'));
+        })->get();
+        foreach ($latestMessages as $messages) {
+            if ($messages->sender_id === auth()->id()) {
+                $userdata = User::find($messages->receiver_id);
+            } else {
+                $userdata = User::find($messages->sender_id);
+            }
+            $messages->otherUserdata = $userdata;
+            $messages->authUserData = auth()->user();
+        }
+        // Return the response
+        return response()->json($latestMessages);
     }
     public function createRoomId($user1, $user2)
     {

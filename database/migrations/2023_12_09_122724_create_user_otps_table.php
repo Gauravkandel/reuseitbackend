@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('otp');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('expired_at')->nullable();
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }

@@ -52,5 +52,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/messages', [ChatController::class, 'message']);
     //phone verification
     Route::post('/sendotp', [verificationController::class, 'SendSms']);
+    Route::Post('/verifyotp', [verificationController::class, 'VerifyOtp']);
+    Route::get('/getUsers', [ChatController::class, 'getUsers']);
 });
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);
