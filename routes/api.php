@@ -55,5 +55,6 @@ Route::group(['middleware' => 'api'], function () {
     Route::Post('/verifyotp', [verificationController::class, 'VerifyOtp']);
     Route::get('/getUsers', [ChatController::class, 'getUsers']);
     Route::get('/user', [ChatController::class, 'InitUser']);
+    Route::get('/userdetails/{id}', [ChatController::class, 'ChatProfile']);
 });
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);

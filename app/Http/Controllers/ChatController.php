@@ -87,11 +87,15 @@ class ChatController extends Controller
         if ($topuser->sender_id === auth()->id()) {
             $id = $topuser->receiver_id;
         } else {
-
             $id = $topuser->sender_id;
         }
 
         return response()->json($id);
+    }
+    public function ChatProfile($id)
+    {
+        $chatUserdata = User::find($id);
+        return response()->json($chatUserdata);
     }
     public function createRoomId($user1, $user2)
     {
