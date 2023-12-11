@@ -84,7 +84,12 @@ class ChatController extends Controller
     {
         $authUser = auth()->user();
         $topuser = message::where('sender_id', $authUser->id)->orWhere('receiver_id', $authUser->id)->latest()->first();
-        return response()->json($topuser->id);
+        if ($topuser->sender_id === $authUser->id) {
+            $id = $topuser->receiver_id;
+        } else {
+            $id = $topuser->sender->id;
+        }
+        return response()->json($id);
     }
     public function createRoomId($user1, $user2)
     {
