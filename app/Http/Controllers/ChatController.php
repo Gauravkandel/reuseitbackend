@@ -55,12 +55,6 @@ class ChatController extends Controller
         });
         return response()->json(['messages' => $messages]);
     }
-    public function InitUser()
-    {
-        $authUser = auth()->user();
-        $topuser = message::where('sender_id', $authUser->id)->orWhere('receiver_id', $authUser->id)->latest()->first();
-        return response()->json($topuser->id);
-    }
     public function getUsers()
     {
         $authUser = auth()->user();
@@ -85,6 +79,12 @@ class ChatController extends Controller
         }
         // Return the response
         return response()->json($latestMessages);
+    }
+    public function InitUser()
+    {
+        $authUser = auth()->user();
+        $topuser = message::where('sender_id', $authUser->id)->orWhere('receiver_id', $authUser->id)->latest()->first();
+        return response()->json($topuser->id);
     }
     public function createRoomId($user1, $user2)
     {
