@@ -55,6 +55,11 @@ class ChatController extends Controller
         });
         return response()->json(['messages' => $messages]);
     }
+    public function InitUser()
+    {
+        $authUser = auth()->user();
+        $topuser = message::where('sender_id', $authUser->id)->orWhere('receiver_id', $authUser->id)->latest()->first();
+    }
     public function getUsers()
     {
         $authUser = auth()->user();
@@ -67,7 +72,7 @@ class ChatController extends Controller
                         ->orWhere('receiver_id', $authUser->id);
                 })->groupBy(DB::raw('CASE WHEN sender_id = ' . $authUser->id . ' 
                 THEN receiver_id ELSE sender_id END'));
-        })->get();
+        })->orderBy('created_at', 'desc')->get();
         foreach ($latestMessages as $messages) {
             if ($messages->sender_id === auth()->id()) {
                 $userdata = User::find($messages->receiver_id);
