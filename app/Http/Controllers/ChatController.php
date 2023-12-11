@@ -86,8 +86,10 @@ class ChatController extends Controller
         $topuser = message::where('sender_id', $authUser->id)->orWhere('receiver_id', $authUser->id)->latest()->first();
         if ($topuser->sender_id === auth()->id()) {
             $id = $topuser->receiver_id;
+        } else {
+
+            $id = $topuser->sender_id;
         }
-        $id = $topuser->sender_id;
 
         return response()->json($id);
     }
