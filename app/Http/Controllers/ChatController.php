@@ -89,12 +89,12 @@ class ChatController extends Controller
         } else {
             $id = $topuser->sender_id;
         }
-
         return response()->json($id);
     }
     public function ChatProfile($id)
     {
         $chatUserdata = User::find($id);
+        $chatUserdata->Timeago =  Carbon::parse($chatUserdata->ActiveTime)->diffForHumans();
         return response()->json($chatUserdata);
     }
     public function createRoomId($user1, $user2)

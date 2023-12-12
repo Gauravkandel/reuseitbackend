@@ -10,7 +10,6 @@ use App\Notifications\WelcomeMessageNotification;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
-use PDO;
 
 class AuthController extends Controller
 {
@@ -49,6 +48,9 @@ class AuthController extends Controller
             // Default unauthorized response if neither condition is met
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+        $user = User::where('email', $credentials['email'])->first();
+        $user->ActiveStatus = true;
+        $user->save();
         return $this->respondWithToken($token);
     }
     public function register(UserRequest $request)
@@ -87,6 +89,11 @@ class AuthController extends Controller
      */
     public function logout()
     {
+        $now = now();
+        $userdata = User::find(auth()->id());
+        $userdata->ActiveStatus = false;
+        $userdata->ActiveTime = $now;
+        $userdata->save();
         auth()->logout();
         $cookie = Cookie::forget('jwt');
         return response()->json(['message' => 'Successfully logged out'])->withCookie($cookie);
