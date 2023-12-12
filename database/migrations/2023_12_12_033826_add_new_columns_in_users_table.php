@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('ActiveStatus')->default(false);
-            $table->timestamp('ActiveTime')->nullable();
+            $table->timestamp('ActiveTime')->default(now());
         });
     }
 
