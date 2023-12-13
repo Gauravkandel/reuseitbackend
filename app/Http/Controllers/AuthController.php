@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
+use App\Models\UserOtp;
 use App\Notifications\WelcomeMessageNotification;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
@@ -75,6 +76,7 @@ class AuthController extends Controller
     {
         $user = auth()->user();
         $user->products;
+        $user->otpdata = UserOtp::where('user_id', auth()->id())->latest()->first();
         foreach ($user->products as $product) {
             $product->image; // Access images relationship for each product
             // Now $images contains the images associated with the current product
