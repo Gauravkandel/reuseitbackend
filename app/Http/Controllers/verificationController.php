@@ -40,17 +40,17 @@ class verificationController extends Controller
         $user_id = auth()->user()->id;
         $generated_otp_data = UserOtp::where('user_id', $user_id)->latest()->first();
         $now =  now();
+        if ($generated_otp_data->status === 1) {
+            return response()->json(["response" => "OTP already verified", "status=>409"], 409);
+        }
         if ($now->isAfter($generated_otp_data->expired_at)) {
-            return response()->json(["response" => "Your OTP has been expired resend Otp"], 410);
+            return response()->json(["response" => "Your OTP has been expired resend Otp", "status=>410"], 410);
         }
         if ($generated_otp_data->otp != $otp) {
-            return response()->json(["response" => "OTP didnot match."], 401);
-        }
-        if ($generated_otp_data->status === 1) {
-            return response()->json(["response" => "OTP already verified"], 409);
+            return response()->json(["response" => "OTP didnot match.", "status=>401"], 401);
         }
         $generated_otp_data->status = 1;
         $generated_otp_data->save();
-        return response()->json(["response" => "OTP has been verified successfully."], 200);
+        return response()->json(["response" => "OTP has been verified successfully.", "status=>200"], 200);
     }
 }
