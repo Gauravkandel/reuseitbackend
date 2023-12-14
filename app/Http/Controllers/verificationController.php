@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserOtp;
 use Exception;
 use Illuminate\Http\Request;
@@ -51,6 +52,11 @@ class verificationController extends Controller
         }
         $generated_otp_data->status = 1;
         $generated_otp_data->save();
+        $userdata = User::find(auth()->id());
+        if ($userdata->verifiedStatus === 0) {
+            $userdata->verifiedStatus = 1;
+            $userdata->save();
+        }
         return response()->json(["response" => "OTP has been verified successfully.", "status=>200"], 200);
     }
 }
