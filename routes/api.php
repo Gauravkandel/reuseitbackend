@@ -44,6 +44,9 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::post('/me', [AuthController::class, 'me']);
+    Route::get('/notactiveuser', [AuthController::class, 'NotActiveUser']);
+    Route::get('/activeuser', [AuthController::class, 'ActiveUser']);
+
     //For dashboard
     Route::get('/myproducts', [DashboardController::class, 'myProducts']);
     Route::get('/deleteads/{id}', [DashboardController::class, 'deleteAds']);

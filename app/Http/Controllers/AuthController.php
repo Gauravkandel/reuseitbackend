@@ -11,6 +11,7 @@ use App\Notifications\WelcomeMessageNotification;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use PDO;
 
 class AuthController extends Controller
 {
@@ -108,6 +109,20 @@ class AuthController extends Controller
     public function refresh()
     {
         return $this->respondWithToken(auth()->refresh());
+    }
+    public function ActiveUser()
+    {
+        $userdata = User::find(auth()->id());
+        $userdata->ActiveStatus = true;
+        $userdata->save();
+    }
+    public function NotActiveUser()
+    {
+        $now = now();
+        $userdata = User::find(auth()->id());
+        $userdata->ActiveStatus = false;
+        $userdata->ActiveTime = $now;
+        $userdata->save();
     }
 
     /**
