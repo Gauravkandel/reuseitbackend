@@ -36,7 +36,7 @@ class SellProductController extends Controller
 {
     public function Electronics(ElectronicsRequest $request)
     {
-        return $this->insertProduct($request, electronic::class, ['type_of_electronic', 'brand', 'model', 'capacity', 'condition', 'warranty_information'], 1);
+        return $this->insertProduct($request, electronic::class, ['type_of_electronic', 'brand', 'model', 'condition', 'warranty_information'], 1);
     }
     public function HomeAppliances(HomeApplianceRequest $request)
     {
