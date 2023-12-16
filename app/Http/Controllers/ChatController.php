@@ -25,18 +25,22 @@ class ChatController extends Controller
         $roomId = $this->createRoomId($sender_id, $receiverId);
         $username = auth()->user()->name;
         $message = new message();
-        if ($request->has('msg_image')) {
+        if ($request->file('msg_image') != null) {
             $message_img = $request->file('msg_image');
             $msg_image = time() . $message_img->getClientOriginalName();
             $$message_img->move(public_path('msg_images'), $msg_image);
             $message->msg_image = $msg_image;
         } else {
-            $msg_image = "";
+            $msg_image = null;
         }
         $message->sender_id = $sender_id;
         $message->receiver_id = $receiverId;
         $message->username = $username;
-        $message->message = $request->message;
+        if ($request->message != null) {
+            $message->message = $request->message;
+        } else {
+            $message->message = "";
+        }
         $message->save();
         $data = message::Where('sender_id', $sender_id)->Where('receiver_id', $receiverId)->latest()->first();
         $createdAt = Carbon::parse($data->created_at);
