@@ -31,7 +31,7 @@ class ChatController extends Controller
             $$message_img->move(public_path('msg_images'), $msg_image);
             $message->msg_image = $msg_image;
         } else {
-            $msg_image = null;
+            $msg_image = "";
         }
         $message->sender_id = $sender_id;
         $message->receiver_id = $receiverId;
