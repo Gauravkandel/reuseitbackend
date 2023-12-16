@@ -27,11 +27,11 @@ class ChatController extends Controller
         $message = new message();
         if ($request->has('msg_image')) {
             $message_img = $request->file('msg_image');
-            $msg_img = time() . $message_img->getClientOriginalName();
-            $$message_img->move(public_path('msg_images'), $msg_img);
-            $message->msg_image = $msg_name;
+            $msg_image = time() . $message_img->getClientOriginalName();
+            $$message_img->move(public_path('msg_images'), $msg_image);
+            $message->msg_image = $msg_image;
         } else {
-            $msg_img = "";
+            $msg_image = "";
         }
         $message->sender_id = $sender_id;
         $message->receiver_id = $receiverId;
@@ -41,7 +41,7 @@ class ChatController extends Controller
         $data = message::Where('sender_id', $sender_id)->Where('receiver_id', $receiverId)->latest()->first();
         $createdAt = Carbon::parse($data->created_at);
         $timeago = $createdAt->diffForHumans();
-        event(new chatEvent($username, $request->input('message'), $roomId, $timeago, $sender_id, $sender->Profile_image, $receiverdata->Profile_image, $msg_img));
+        event(new chatEvent($username, $request->input('message'), $roomId, $timeago, $sender_id, $sender->Profile_image, $receiverdata->Profile_image, $msg_image));
         return response()->json(['status' => 'Message sent successfully']);
     }
     public function getMessages($senderId, $receiverId)

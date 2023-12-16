@@ -26,7 +26,7 @@ class chatEvent implements ShouldBroadcastNow
         public $sender_id,
         public string $sender_image,
         public string $receiver_image,
-        public string $msg_img
+        public string $msg_image
     ) {
         //
     }
