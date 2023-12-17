@@ -53,7 +53,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/status', [DashboardController::class, 'Soldout']);
     //For chat application
     Route::post('/messages', [ChatController::class, 'message']);
-    Route::post('/getmsgcount', [ChatController::class, 'getMessageCount']);
+    Route::get('/getmsgcount', [ChatController::class, 'getMessageCount']);
     //phone verification
     Route::post('/sendotp', [verificationController::class, 'SendSms']);
     Route::Post('/verifyotp', [verificationController::class, 'VerifyOtp']);
