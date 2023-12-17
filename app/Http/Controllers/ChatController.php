@@ -51,6 +51,7 @@ class ChatController extends Controller
         $timeago = $createdAt->diffForHumans();
         event(new chatEvent($username, $msgs, $roomId, $timeago, $sender_id, $sender->Profile_image, $receiverdata->Profile_image, $msg_image));
         $this->getUsers();
+        $this->getMessageCount($receiverId);
         return response()->json(['status' => 'Message sent successfully']);
     }
     public function getMessages($senderId, $receiverId)
