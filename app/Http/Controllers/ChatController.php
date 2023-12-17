@@ -76,13 +76,13 @@ class ChatController extends Controller
     public function getUsers()
     {
         $authUser = auth()->user();
-        $latestMessages = $latestMessages = Message::whereIn('id', function ($query) use ($authUser) {
+        $latestMessages = Message::whereIn('id', function ($query) use ($authUser) {
             $query->select(DB::raw('MAX(id)'))
                 ->from('messages')
                 ->where('sender_id', $authUser->id)
                 ->orWhere('receiver_id', $authUser->id)
                 ->groupBy(DB::raw('CASE WHEN sender_id = ' . $authUser->id . ' 
-                THEN receiver_id ELSE sender_id END'));
+        THEN receiver_id ELSE sender_id END'));
         })->orderBy('created_at', 'desc')->get();
 
         foreach ($latestMessages as $messages) {
