@@ -50,6 +50,7 @@ class ChatController extends Controller
         $createdAt = Carbon::parse($data->created_at);
         $timeago = $createdAt->diffForHumans();
         event(new chatEvent($username, $msgs, $roomId, $timeago, $sender_id, $sender->Profile_image, $receiverdata->Profile_image, $msg_image));
+        $this->getUsers();
         return response()->json(['status' => 'Message sent successfully']);
     }
     public function getMessages($senderId, $receiverId)
