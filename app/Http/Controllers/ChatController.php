@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Events\chatEvent;
 use App\Events\MsgCountEvent;
-use App\Events\userListEvent;
 use App\Models\message;
 use App\Models\User;
 use Carbon\Carbon;
@@ -50,9 +49,6 @@ class ChatController extends Controller
         $createdAt = Carbon::parse($data->created_at);
         $timeago = $createdAt->diffForHumans();
         event(new chatEvent($username, $msgs, $roomId, $timeago, $sender_id, $sender->Profile_image, $receiverdata->Profile_image, $msg_image));
-        $this->getuserlist($receiverId);
-        $this->getUsers();
-        $this->getMessageCount($receiverId);
         return response()->json(['status' => 'Message sent successfully']);
     }
     public function getMessages($senderId, $receiverId)
@@ -74,51 +70,19 @@ class ChatController extends Controller
         });
         return response()->json(['messages' => $messages]);
     }
-    public function getuserlist($id)
-    {
-        $authUser = auth()->user();
-        $latestMessages = Message::where(function ($query) use ($id) {
-            $query->where('sender_id', $id)
-                ->orWhere('receiver_id', $id);
-        })->whereIn('id', function ($query) use ($id) {
-            $query->select(DB::raw('MAX(id) as max_id'))
-                ->from('messages')
-                ->where(function ($subquery) use ($id) {
-                    $subquery->where('sender_id', $id)
-                        ->orWhere('receiver_id', $id);
-                })
-                ->groupBy(DB::raw('CASE WHEN sender_id = ' . $id . ' 
-                  THEN receiver_id ELSE sender_id END'));
-        })->orderBy('created_at', 'desc')->get();
-
-        foreach ($latestMessages as $messages) {
-            if ($messages->sender_id === $id) {
-                $userdata = User::find($messages->receiver_id);
-            } else {
-                $userdata = User::find($messages->sender_id);
-            }
-            $messages->otherUserdata = $userdata;
-            $messages->authUserData = auth()->user();
-        }
-        event(new userListEvent($latestMessages, $id));
-    }
     public function getUsers()
     {
         $authUser = auth()->user();
-        $latestMessages = Message::where(function ($query) use ($authUser) {
-            $query->where('sender_id', $authUser->id)
-                ->orWhere('receiver_id', $authUser->id);
-        })->whereIn('id', function ($query) use ($authUser) {
-            $query->select(DB::raw('MAX(id) as max_id'))
+
+        $latestMessages = message::whereIn('id', function ($query) use ($authUser) {
+            $query->select(DB::raw('MAX(id)'))
                 ->from('messages')
                 ->where(function ($subquery) use ($authUser) {
                     $subquery->where('sender_id', $authUser->id)
                         ->orWhere('receiver_id', $authUser->id);
-                })
-                ->groupBy(DB::raw('CASE WHEN sender_id = ' . $authUser->id . ' 
-                  THEN receiver_id ELSE sender_id END'));
+                })->groupBy(DB::raw('CASE WHEN sender_id = ' . $authUser->id . ' 
+                THEN receiver_id ELSE sender_id END'));
         })->orderBy('created_at', 'desc')->get();
-
         foreach ($latestMessages as $messages) {
             if ($messages->sender_id === auth()->id()) {
                 $userdata = User::find($messages->receiver_id);
@@ -128,9 +92,9 @@ class ChatController extends Controller
             $messages->otherUserdata = $userdata;
             $messages->authUserData = auth()->user();
         }
-        event(new userListEvent($latestMessages, auth()->id()));
+
         // Return the response
-        // return response()->json($latestMessages);
+        return response()->json($latestMessages);
     }
     public function InitUser()
     {
@@ -152,7 +116,7 @@ class ChatController extends Controller
     public function getMessageCount($id)
     {
         $count = message::where('receiver_id', $id)->where('msg_status', 0)->count();
-        event(new MsgCountEvent($count, $id));
+        return response()->json(['count' => $count]);
     }
     public function createRoomId($user1, $user2)
     {
