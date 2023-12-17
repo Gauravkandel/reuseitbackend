@@ -50,7 +50,7 @@ class ChatController extends Controller
         $createdAt = Carbon::parse($data->created_at);
         $timeago = $createdAt->diffForHumans();
         event(new chatEvent($username, $msgs, $roomId, $timeago, $sender_id, $sender->Profile_image, $receiverdata->Profile_image, $msg_image));
-        $this->getUsers();
+        $this->getuserlist($receiverId);
         $this->getMessageCount($receiverId);
         return response()->json(['status' => 'Message sent successfully']);
     }
@@ -73,6 +73,29 @@ class ChatController extends Controller
         });
         return response()->json(['messages' => $messages]);
     }
+    public function getuserlist($id)
+    {
+        $authUser = auth()->user();
+        $latestMessages = message::whereIn('id', function ($query) use ($authUser) {
+            $query->select(DB::raw('MAX(id)'))
+                ->from('messages')
+                ->where(function ($subquery) use ($authUser) {
+                    $subquery->where('sender_id', $authUser->id)
+                        ->orWhere('receiver_id', $authUser->id);
+                })->groupBy(DB::raw('CASE WHEN sender_id = ' . $authUser->id . ' 
+               THEN receiver_id ELSE sender_id END'));
+        })->orderBy('created_at', 'desc')->get();
+        foreach ($latestMessages as $messages) {
+            if ($messages->sender_id === auth()->id()) {
+                $userdata = User::find($messages->receiver_id);
+            } else {
+                $userdata = User::find($messages->sender_id);
+            }
+            $messages->otherUserdata = $userdata;
+            $messages->authUserData = auth()->user();
+        }
+        event(new userListEvent($latestMessages, $id));
+    }
     public function getUsers()
     {
         $authUser = auth()->user();
@@ -83,7 +106,7 @@ class ChatController extends Controller
                     $subquery->where('sender_id', $authUser->id)
                         ->orWhere('receiver_id', $authUser->id);
                 })->groupBy(DB::raw('CASE WHEN sender_id = ' . $authUser->id . ' 
-                THEN receiver_id ELSE sender_id END'));
+               THEN receiver_id ELSE sender_id END'));
         })->orderBy('created_at', 'desc')->get();
         foreach ($latestMessages as $messages) {
             if ($messages->sender_id === auth()->id()) {

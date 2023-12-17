@@ -33,7 +33,7 @@ class userListEvent implements ShouldBroadcastNow
      */
     public function broadcastOn(): array
     {
-        return ['user'];
+        return ['user.' . $this->userId];
     }
     public function broadcastAs()
     {
