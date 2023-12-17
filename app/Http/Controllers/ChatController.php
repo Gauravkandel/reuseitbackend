@@ -113,9 +113,10 @@ class ChatController extends Controller
         $chatUserdata->Timeago =  Carbon::parse($chatUserdata->ActiveTime)->diffForHumans();
         return response()->json($chatUserdata);
     }
-    public function getMessageCount($id)
+    public function getMessageCount()
     {
-        $count = message::where('receiver_id', $id)->where('msg_status', 0)->count();
+
+        $count = message::where('receiver_id', auth()->id())->where('msg_status', 0)->count();
         return response()->json(['count' => $count]);
     }
     public function createRoomId($user1, $user2)
