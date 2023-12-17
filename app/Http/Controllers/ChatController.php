@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\chatEvent;
 use App\Events\MsgCountEvent;
+use App\Events\userListEvent;
 use App\Models\message;
 use App\Models\User;
 use Carbon\Carbon;
@@ -92,8 +93,9 @@ class ChatController extends Controller
             $messages->otherUserdata = $userdata;
             $messages->authUserData = auth()->user();
         }
+        event(new userListEvent($latestMessages, auth()->id()));
         // Return the response
-        return response()->json($latestMessages);
+        // return response()->json($latestMessages);
     }
     public function InitUser()
     {
