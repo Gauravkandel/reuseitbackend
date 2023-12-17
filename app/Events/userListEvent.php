@@ -23,7 +23,7 @@ class userListEvent implements ShouldBroadcastNow
         public $latestMessages,
         public $userId
     ) {
-        //
+        \Log::info($latestMessages);
     }
 
     /**
