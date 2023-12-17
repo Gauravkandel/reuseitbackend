@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('messages', function (Blueprint $table) {
             $table->string('msg_image')->nullable();
+            $table->integer('msg_status')->default(0);
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('messages', function (Blueprint $table) {
             $table->dropColumn('msg_image');
+            $table->dropColumn('msg_status');
         });
     }
 };

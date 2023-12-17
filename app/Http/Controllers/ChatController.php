@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\chatEvent;
+use App\Events\MsgCountEvent;
 use App\Models\message;
 use App\Models\User;
 use Carbon\Carbon;
@@ -110,6 +111,11 @@ class ChatController extends Controller
         $chatUserdata = User::find($id);
         $chatUserdata->Timeago =  Carbon::parse($chatUserdata->ActiveTime)->diffForHumans();
         return response()->json($chatUserdata);
+    }
+    public function getMessageCount()
+    {
+        $count = message::where('receiver_id', auth()->id())->where('msg_status', 0)->count();
+        event(new MsgCountEvent($count, auth()->id()));
     }
     public function createRoomId($user1, $user2)
     {
