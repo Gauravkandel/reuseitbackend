@@ -55,7 +55,13 @@ class ChatController extends Controller
     {
         $senderdata = User::find($senderId);
         $receiverdata = User::find($receiverId);
-
+        $messages_stat = message::where('sender_id', $receiverId)->where('receiver_id', $senderId)->get();
+        foreach ($messages_stat as $message) {
+            if ($message->msg_status === 0) {
+                $message->msg_status = 1;
+                $message->save();
+            }
+        }
         $messages = Message::where(function ($query) use ($senderId, $receiverId) {
             $query->where('sender_id', $senderId)
                 ->where('receiver_id', $receiverId);
@@ -84,11 +90,16 @@ class ChatController extends Controller
                 THEN receiver_id ELSE sender_id END'));
         })->orderBy('created_at', 'desc')->get();
         foreach ($latestMessages as $messages) {
+            $messages->unseen_msg = message::where('sender_id', $messages->receiver_id)
+                ->where('receiver_id', $messages->sender_id)
+                ->where('msg_status', 0)
+                ->count();
             if ($messages->sender_id === auth()->id()) {
                 $userdata = User::find($messages->receiver_id);
             } else {
                 $userdata = User::find($messages->sender_id);
             }
+
             $messages->otherUserdata = $userdata;
             $messages->authUserData = auth()->user();
         }
@@ -115,7 +126,6 @@ class ChatController extends Controller
     }
     public function getMessageCount()
     {
-
         $count = message::where('receiver_id', auth()->id())->where('msg_status', 0)->count();
         return response()->json(['count' => $count]);
     }
