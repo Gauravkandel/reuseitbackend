@@ -90,10 +90,11 @@ class ChatController extends Controller
                 THEN receiver_id ELSE sender_id END'));
         })->orderBy('created_at', 'desc')->get();
         foreach ($latestMessages as $messages) {
-            $messages->unseen_msg = message::where('sender_id', $messages->receiver_id)
-                ->where('receiver_id', $messages->sender_id)
+            $unseenMessages = message::where('sender_id', $messages->sender_id)
+                ->where('receiver_id', $messages->receiver_id)
                 ->where('msg_status', 0)
-                ->count();
+                ->get();
+            $messages->unseen_msg = count($unseenMessages);
             if ($messages->sender_id === auth()->id()) {
                 $userdata = User::find($messages->receiver_id);
             } else {
