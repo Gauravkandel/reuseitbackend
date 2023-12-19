@@ -79,7 +79,6 @@ class ChatController extends Controller
     public function getUsers()
     {
         $authUser = auth()->user();
-
         $latestMessages = message::whereIn('id', function ($query) use ($authUser) {
             $query->select(DB::raw('MAX(id)'))
                 ->from('messages')
@@ -104,7 +103,6 @@ class ChatController extends Controller
                     ->where('msg_status', 0)
                     ->get();
             }
-
             $messages->unseen_msg = count($unseenMessages);
             $messages->otherUserdata = $userdata;
             $messages->authUserData = auth()->user();
