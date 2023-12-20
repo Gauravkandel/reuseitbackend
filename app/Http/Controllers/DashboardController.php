@@ -45,15 +45,18 @@ class DashboardController extends Controller
     }
     public function EditUserProducts($id)
     {
-
         try {
             $product = Product::with(['category', 'image'])->findOrFail($id);
+            if ($product->user_id === auth()->id()) {
 
-            $category = $product->category->category_name;
+                $category = $product->category->category_name;
 
-            $data = $this->ProductServices->getProductData($category, $id); //sending data to function getproductData
+                $data = $this->ProductServices->getProductData($category, $id); //sending data to function getproductData
 
-            return response()->json(['data' => $data], 200);
+                return response()->json(['data' => $data], 200);
+            } else {
+                return response()->json(['error' => 'UnAuthorized to view data'], 401);
+            }
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['error' => 'Product not found'], 404);
         } catch (\Exception $e) {
