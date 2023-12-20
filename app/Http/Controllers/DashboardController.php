@@ -12,7 +12,7 @@ class DashboardController extends Controller
 
     public function __construct(ProductService $ProductServices)
     {
-        $this->middleware('auth:api', ['except' => ['EditUserProducts']]);
+        $this->middleware('auth:api');
         $this->ProductServices = $ProductServices;
     }
     public function myProducts(Request $request)
