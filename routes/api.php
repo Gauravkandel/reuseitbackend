@@ -54,6 +54,8 @@ Route::group(['middleware' => 'api'], function () {
     //For chat application
     Route::post('/messages', [ChatController::class, 'message']);
     Route::get('/getmsgcount', [ChatController::class, 'getMessageCount']);
+    Route::post('/typing', [chatController::class, 'typing']);
+    Route::post('/notTyping', [chatController::class, 'notTyping']);
     //phone verification
     Route::post('/sendotp', [verificationController::class, 'SendSms']);
     Route::Post('/verifyotp', [verificationController::class, 'VerifyOtp']);

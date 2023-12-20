@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\chatEvent;
 use App\Events\MsgCountEvent;
+use App\Events\TypingEvent;
 use App\Models\message;
 use App\Models\User;
 use Carbon\Carbon;
@@ -132,6 +133,25 @@ class ChatController extends Controller
     {
         $count = message::where('receiver_id', auth()->id())->where('msg_status', 0)->count();
         return response()->json(['count' => $count]);
+    }
+    public function typing(Request $request)
+    {
+        $receiverId = $request->id;
+        $roomId = $this->createRoomId(auth()->id(), $receiverId);
+
+        broadcast(new TypingEvent($roomId, true, auth()->id()))->toOthers();
+
+        return response()->json(['status' => 'Typing event sent']);
+    }
+
+    public function notTyping(Request $request)
+    {
+        $receiverId = $request->id;
+        $roomId = $this->createRoomId(auth()->id(), $receiverId);
+
+        broadcast(new TypingEvent($roomId, false, auth()->id()))->toOthers();
+
+        return response()->json(['status' => 'Not typing event sent']);
     }
     public function createRoomId($user1, $user2)
     {
