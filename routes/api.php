@@ -64,3 +64,4 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('/userdetails/{id}', [ChatController::class, 'ChatProfile']);
 });
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);
+Route::get('/editProducts/{id}', [DashboardController::class, 'EditUserProducts']);

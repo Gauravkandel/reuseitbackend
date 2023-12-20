@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\product;
 use Illuminate\Http\Request;
+use App\Services\ProductService;
 
 class DashboardController extends Controller
 {
-    public function __construct()
+    protected $ProductServices;
+
+    public function __construct(ProductService $ProductServices)
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', ['except' => ['EditUserProducts']]);
+        $this->ProductServices = $ProductServices;
     }
     public function myProducts(Request $request)
     {
@@ -38,5 +42,23 @@ class DashboardController extends Controller
         $productdata->selling_price =  $product_sp;
         $productdata->save();
         return response()->json(['message' => 'successfull'], 200);
+    }
+    public function EditUserProducts($id)
+    {
+
+        try {
+            $product = Product::with(['category', 'image'])->findOrFail($id);
+
+            $category = $product->category->category_name;
+
+            $data = $this->ProductServices->getProductData($category, $id); //sending data to function getproductData
+
+            return response()->json(['data' => $data], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Product not found'], 404);
+        } catch (\Exception $e) {
+            // Handling exceptions 
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
     }
 }
