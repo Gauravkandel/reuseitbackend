@@ -100,7 +100,6 @@ class SellProductController extends Controller
     {
         $productData = $request->validated();
         DB::beginTransaction();
-
         try {
             // Insert into products table
             $productData['category_id'] = $category;
