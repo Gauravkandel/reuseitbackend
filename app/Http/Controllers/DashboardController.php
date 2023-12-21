@@ -104,7 +104,8 @@ class DashboardController extends Controller
         $category = $productdata->category_id;
         switch ($category) {
             case 1:
-                $this->Electronics($request);
+                $response = $this->Electronics($request);
+                return response()->json($response);
                 break;
             case 2:
                 $this->HomeAppliances($request);
