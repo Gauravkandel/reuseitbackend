@@ -252,11 +252,11 @@ class DashboardController extends Controller
             //     return response()->json(['error' => 'Image is required'], 422);
             // }
             if (DB::commit()) {
-                return response()->json(['success' => 'Updated successfully'], 200);
+                return 'Updated successfully';
             }
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['error' => 'Failed to insert data.'], 500);
+            return 'Failed to insert data.';
         }
     }
 }
