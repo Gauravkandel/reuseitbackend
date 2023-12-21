@@ -217,7 +217,7 @@ class DashboardController extends Controller
     }
     private function insertProduct($request, $model, $dataKeys, $category)
     {
-        $productData = $request->validated();
+        $productData = $request->all();
         DB::beginTransaction();
         try {
             // Insert into products table
@@ -250,8 +250,9 @@ class DashboardController extends Controller
             // } else {
             //     return response()->json(['error' => 'Image is required'], 422);
             // }
-            DB::commit();
-            return response()->json(['success' => 'Updated successfully'], 200);
+            if (DB::commit()) {
+                return response()->json(['success' => 'Updated successfully'], 200);
+            }
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['error' => 'Failed to insert data.'], 500);
