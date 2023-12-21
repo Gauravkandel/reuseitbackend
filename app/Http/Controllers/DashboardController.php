@@ -156,7 +156,8 @@ class DashboardController extends Controller
             'condition' => 'required|string',
             'warranty_information' => 'nullable|string',
         ]);
-        return $this->insertProduct($request, electronic::class, ['type_of_electronic', 'brand', 'model', 'condition', 'warranty_information'], 1);
+        $data = $this->insertProduct($request, electronic::class, ['type_of_electronic', 'brand', 'model', 'condition', 'warranty_information'], 1);
+        return $data;
     }
     public function HomeAppliances(Request $request)
     {
