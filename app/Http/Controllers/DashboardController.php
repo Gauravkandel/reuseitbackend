@@ -94,7 +94,7 @@ class DashboardController extends Controller
         }
     }
     //update Products
-    public function UpdateProducts(UpdateRequest $request)
+    public function UpdateProducts(Request $request)
     {
         $productdata = product::with('category', 'image')->findOrFail($request->id);
 
@@ -106,108 +106,115 @@ class DashboardController extends Controller
             case 1:
                 $this->Electronics($request);
                 break;
-                // case 2:
-                //     $this->HomeAppliances($request);
-                //     break;
-                // case 3:
-                //     $this->Furnitures($request);
-                //     break;
-                // case 4:
-                //     $this->Clothing($request);
-                //     break;
-                // case 5:
-                //     $this->Sports($request);
-                //     break;
-                // case 6:
-                //     $this->Books($request);
-                //     break;
-                // case 7:
-                //     $this->Antiques($request);
-                //     break;
-                // case 8:
-                //     $this->Cars($request);
-                //     break;
-                // case 9:
-                //     $this->Motorcycle($request);
-                //     break;
-                // case 10:
-                //     $this->Scooter($request);
-                //     break;
-                // case 11:
-                //     $this->Bicycle($request);
-                //     break;
-                // case 12:
-                //     $this->Toys($request);
-                //     break;
-                // case 13:
-                //     $this->Music($request);
-                //     break;
+            case 2:
+                $this->HomeAppliances($request);
+                break;
+            case 3:
+                $this->Furnitures($request);
+                break;
+            case 4:
+                $this->Clothing($request);
+                break;
+            case 5:
+                $this->Sports($request);
+                break;
+            case 6:
+                $this->Books($request);
+                break;
+            case 7:
+                $this->Antiques($request);
+                break;
+            case 8:
+                $this->Cars($request);
+                break;
+            case 9:
+                $this->Motorcycle($request);
+                break;
+            case 10:
+                $this->Scooter($request);
+                break;
+            case 11:
+                $this->Bicycle($request);
+                break;
+            case 12:
+                $this->Toys($request);
+                break;
+            case 13:
+                $this->Music($request);
+                break;
             default:
                 return response()->json(['error' => "Send valid Information"]);
         }
     }
-    public function Electronics(UpdateRequest $request)
+    public function Electronics(Request $request)
     {
+        $request->validate([
+            'type_of_electronic' => 'required|string',
+            'brand' => 'required|string',
+            'model' => 'required|string',
+            'condition' => 'required|string',
+            'warranty_information' => 'nullable|string',
+        ]);
         return $this->insertProduct($request, electronic::class, ['type_of_electronic', 'brand', 'model', 'condition', 'warranty_information'], 1);
     }
-    // public function HomeAppliances(HomeApplianceRequest $request)
-    // {
-    //     return $this->insertProduct($request, HomeAppliance::class, ['type_of_appliance', 'brand', 'model', 'capacity', 'features', 'condition', 'warranty_information'], 2);
-    // }
-    // public function Furnitures(FurnitureRequest $request)
-    // {
-    //     return $this->insertProduct($request, furniture::class, ['type_of_furniture', 'material', 'dimensions', 'color', 'style', 'condition', 'assembly_required'], 3);
-    // }
-    // public function Clothing(ClothingRequest $request)
-    // {
-    //     return $this->insertProduct($request, clothing::class, ['type_of_clothing_accessory', 'size', 'color', 'brand', 'material', 'condition', 'care_instructions'], 4);
-    // }
-    // public function Sports(SportsRequest $request)
-    // {
-    //     return $this->insertProduct($request, sport::class, ['type_of_equipment', 'brand', 'condition', 'size_weight', 'features', 'suitable_sport_activity', 'warranty_information', 'usage_instructions'], 5);
-    // }
-    // public function Books(BooksRequest $request)
-    // {
-    //     return $this->insertProduct($request, book::class, ['title', 'author_artist', 'genre', 'format', 'condition', 'edition', 'isbn_upc', 'warranty_information', 'description'], 6);
-    // }
-    // public function Antiques(AntiquesRequest $request)
-    // {
-    //     return $this->insertProduct($request, antique::class, ['type_of_item', 'era_period', 'material', 'condition', 'provenance_location', 'rarity', 'historical_significance', 'certification'], 7);
-    // }
-    // public function Cars(CarsRequest $request)
-    // {
-    //     return $this->insertProduct($request, car::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'fuel_type', 'owner', 'transmission_type'], 8);
-    // }
-    // public function Motorcycle(MotorRequest $request)
-    // {
-    //     return $this->insertProduct($request, motorcycle::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'owner'], 9);
-    // }
-    // public function Scooter(ScooterRequest $request)
-    // {
-    //     return $this->insertProduct($request, scooter::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'owner'], 10);
-    // }
-    // public function Bicycle(BicycleRequest $request)
-    // {
-    //     return $this->insertProduct($request, bicycle::class, ['brand'], 11);
-    // }
-    // public function Toys(ToysRequest $request)
-    // {
-    //     return $this->insertProduct(
-    //         $request,
-    //         toy::class,
-    //         ['type_of_toy_game', 'age_group', 'brand', 'condition', 'description', 'safety_information', 'assembly_required', 'recommended_use'],
-    //         12
-    //     );
-    // }
-    // public function Music(MusicRequest $request)
-    // {
-    //     return $this->insertProduct(
-    //         $request,
-    //         music::class,
-    //         ['type_of_instrument', 'brand', 'condition', 'material', 'accessories_included', 'sound_characteristics'],
-    //         13
-    //     );
-    // }
+    public function HomeAppliances(Request $request)
+    {
+        return $this->insertProduct($request, HomeAppliance::class, ['type_of_appliance', 'brand', 'model', 'capacity', 'features', 'condition', 'warranty_information'], 2);
+    }
+    public function Furnitures(Request $request)
+    {
+        return $this->insertProduct($request, furniture::class, ['type_of_furniture', 'material', 'dimensions', 'color', 'style', 'condition', 'assembly_required'], 3);
+    }
+    public function Clothing(Request $request)
+    {
+        return $this->insertProduct($request, clothing::class, ['type_of_clothing_accessory', 'size', 'color', 'brand', 'material', 'condition', 'care_instructions'], 4);
+    }
+    public function Sports(Request $request)
+    {
+        return $this->insertProduct($request, sport::class, ['type_of_equipment', 'brand', 'condition', 'size_weight', 'features', 'suitable_sport_activity', 'warranty_information', 'usage_instructions'], 5);
+    }
+    public function Books(Request $request)
+    {
+        return $this->insertProduct($request, book::class, ['title', 'author_artist', 'genre', 'format', 'condition', 'edition', 'isbn_upc', 'warranty_information', 'description'], 6);
+    }
+    public function Antiques(Request $request)
+    {
+        return $this->insertProduct($request, antique::class, ['type_of_item', 'era_period', 'material', 'condition', 'provenance_location', 'rarity', 'historical_significance', 'certification'], 7);
+    }
+    public function Cars(Request $request)
+    {
+        return $this->insertProduct($request, car::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'fuel_type', 'owner', 'transmission_type'], 8);
+    }
+    public function Motorcycle(Request $request)
+    {
+        return $this->insertProduct($request, motorcycle::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'owner'], 9);
+    }
+    public function Scooter(Request $request)
+    {
+        return $this->insertProduct($request, scooter::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'owner'], 10);
+    }
+    public function Bicycle(Request $request)
+    {
+        return $this->insertProduct($request, bicycle::class, ['brand'], 11);
+    }
+    public function Toys(Request $request)
+    {
+        return $this->insertProduct(
+            $request,
+            toy::class,
+            ['type_of_toy_game', 'age_group', 'brand', 'condition', 'description', 'safety_information', 'assembly_required', 'recommended_use'],
+            12
+        );
+    }
+    public function Music(Request $request)
+    {
+        return $this->insertProduct(
+            $request,
+            music::class,
+            ['type_of_instrument', 'brand', 'condition', 'material', 'accessories_included', 'sound_characteristics'],
+            13
+        );
+    }
     private function insertProduct($request, $model, $dataKeys, $category)
     {
         $productData = $request->validated();

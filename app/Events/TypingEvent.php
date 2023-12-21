@@ -18,8 +18,11 @@ class TypingEvent implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      */
-    public function __construct(public $roomId, public bool $status, public $sender_id)
-    {
+    public function __construct(
+        public $roomId,
+        public bool $status,
+        public $sender_id
+    ) {
         //
     }
 
