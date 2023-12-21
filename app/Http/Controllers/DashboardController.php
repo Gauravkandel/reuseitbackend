@@ -221,26 +221,26 @@ class DashboardController extends Controller
             $specificModel = $model::where('product_id', $request->id)->firstOrFail();
             $specificModel->update($specificData);
             // Store the uploaded image paths
-            $existingImages = Product_image::where('product_id', $request->id)->get();
-            foreach ($existingImages as $existingImage) {
-                $imagePath = public_path('images') . '/' . $existingImage->image_url;
-                if (file_exists($imagePath)) {
-                    unlink($imagePath);
-                }
-            }
-            if ($request->has('image_urls')) {
-                foreach ($request->file('image_urls') as $index => $image) {
-                    $imageName = time() . $index . '_' . $image->getClientOriginalName();
-                    $image->move(public_path('images'), $imageName);
-                    $productImage = new product_image([
-                        'product_id' => $request->id,
-                        'image_url' => $imageName,
-                    ]);
-                    $productImage->save();
-                }
-            } else {
-                return response()->json(['error' => 'Image is required'], 422);
-            }
+            // $existingImages = Product_image::where('product_id', $request->id)->get();
+            // foreach ($existingImages as $existingImage) {
+            //     $imagePath = public_path('images') . '/' . $existingImage->image_url;
+            //     if (file_exists($imagePath)) {
+            //         unlink($imagePath);
+            //     }
+            // }
+            // if ($request->has('image_urls')) {
+            //     foreach ($request->file('image_urls') as $index => $image) {
+            //         $imageName = time() . $index . '_' . $image->getClientOriginalName();
+            //         $image->move(public_path('images'), $imageName);
+            //         $productImage = new product_image([
+            //             'product_id' => $request->id,
+            //             'image_url' => $imageName,
+            //         ]);
+            //         $productImage->save();
+            //     }
+            // } else {
+            //     return response()->json(['error' => 'Image is required'], 422);
+            // }
             DB::commit();
             return response()->json(['success' => 'Updated successfully'], 200);
         } catch (\Exception $e) {
