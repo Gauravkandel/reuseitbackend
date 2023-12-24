@@ -7,6 +7,7 @@ use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SellProductController;
 use App\Http\Controllers\verificationController;
 use App\Http\Controllers\ViewProductController;
+use App\Models\category;
 use Illuminate\Support\Facades\Route;
 
 //recommendation
@@ -22,19 +23,25 @@ Route::controller(ViewProductController::class)->group(function () {
 
 //for posting products
 Route::controller(SellProductController::class)->group(function () {
-    Route::post('/homeappliances', 'HomeAppliances');
-    Route::post('/electronics', 'Electronics');
-    Route::post('/furnitures', 'Furnitures');
-    Route::post('/clothings', 'Clothing');
-    Route::post('/sports', 'Sports');
-    Route::post('/books', 'Books');
-    Route::post('/antiques', 'Antiques');
-    Route::post('/cars', 'Cars');
-    Route::post('/motorcycles', 'Motorcycle');
-    Route::post('/scooters', 'Scooter');
-    Route::post('/bicycles', 'Bicycle');
-    Route::post('/toys', 'Toys');
-    Route::post('/music', 'Music');
+    $category = category::all();
+    foreach ($category as $cat) {
+        Route::post('/' . $cat->function_name, $cat->function_name);
+    }
+    Route::post('/sellproducts', 'insertProductByCategory');
+    Route::get('/getCategory', 'getCategory');
+    // Route::post('/homeappliances', 'HomeAppliances');
+    // Route::post('/electronics', 'Electronics');
+    // Route::post('/furnitures', 'Furnitures');
+    // Route::post('/clothings', 'Clothing');
+    // Route::post('/sports', 'Sports');
+    // Route::post('/books', 'Books');
+    // Route::post('/antiques', 'Antiques');
+    // Route::post('/cars', 'Cars');
+    // Route::post('/motorcycles', 'Motorcycle');
+    // Route::post('/scooters', 'Scooter');
+    // Route::post('/bicycles', 'Bicycle');
+    // Route::post('/toys', 'Toys');
+    // Route::post('/music', 'Music');
 });
 
 //authentication
