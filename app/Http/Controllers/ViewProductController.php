@@ -29,8 +29,7 @@ class ViewProductController extends Controller
         try {
             $product = Product::with(['category', 'image'])->findOrFail($id);
 
-            $category = $product->category->category_name;
-
+            $category = $product->category;
             $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
 
             return response()->json(['data' => $data], 200);
@@ -38,7 +37,7 @@ class ViewProductController extends Controller
             return response()->json(['error' => 'Product not found'], 404);
         } catch (\Exception $e) {
             // Handling exceptions 
-            return response()->json(['error' => 'Something went wrong'], 500);
+            return response()->json(['error' => 'Something went wrong' . $e], 500);
         }
     }
     public function filter(Request $request)

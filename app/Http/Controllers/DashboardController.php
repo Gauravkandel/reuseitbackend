@@ -21,7 +21,9 @@ use App\Models\antique;
 use App\Models\bicycle;
 use App\Models\book;
 use App\Models\car;
+use App\Models\category;
 use App\Models\clothing;
+use App\Models\DynamicModel;
 use App\Models\Electronic;
 use App\Models\furniture;
 use App\Models\HomeAppliance;
@@ -94,170 +96,97 @@ class DashboardController extends Controller
         }
     }
     //update Products
-    public function UpdateProducts(Request $request)
+    public function insertProductByCategory(Request $request)
     {
-        $productdata = product::with('category', 'image')->findOrFail($request->id);
-
-        if ($productdata->user_id != auth()->id()) {
-            return response()->json(['error' => 'Not Authorized to update data'], 401);
-        }
-        $category = $productdata->category_id;
-        switch ($category) {
-            case 1:
-                $response = $this->Electronics($request);
-                return response()->json(['response' => $response]);
-                break;
-            case 2:
-                $this->HomeAppliances($request);
-                break;
-            case 3:
-                $this->Furnitures($request);
-                break;
-            case 4:
-                $this->Clothing($request);
-                break;
-            case 5:
-                $this->Sports($request);
-                break;
-            case 6:
-                $this->Books($request);
-                break;
-            case 7:
-                $this->Antiques($request);
-                break;
-            case 8:
-                $this->Cars($request);
-                break;
-            case 9:
-                $this->Motorcycle($request);
-                break;
-            case 10:
-                $this->Scooter($request);
-                break;
-            case 11:
-                $this->Bicycle($request);
-                break;
-            case 12:
-                $this->Toys($request);
-                break;
-            case 13:
-                $this->Music($request);
-                break;
-            default:
-                return response()->json(['error' => "Send valid Information"]);
-        }
+        return $this->insertProducts($request);
     }
-    public function Electronics(Request $request)
-    {
-        $request->validate([
-            'type_of_electronic' => 'required|string',
-            'brand' => 'required|string',
-            'model' => 'required|string',
-            'condition' => 'required|string',
-            'warranty_information' => 'nullable|string',
-        ]);
-        $data = $this->insertProduct($request, electronic::class, ['type_of_electronic', 'brand', 'model', 'condition', 'warranty_information'], 1);
-        return $data;
-    }
-    public function HomeAppliances(Request $request)
-    {
-        return $this->insertProduct($request, HomeAppliance::class, ['type_of_appliance', 'brand', 'model', 'capacity', 'features', 'condition', 'warranty_information'], 2);
-    }
-    public function Furnitures(Request $request)
-    {
-        return $this->insertProduct($request, furniture::class, ['type_of_furniture', 'material', 'dimensions', 'color', 'style', 'condition', 'assembly_required'], 3);
-    }
-    public function Clothing(Request $request)
-    {
-        return $this->insertProduct($request, clothing::class, ['type_of_clothing_accessory', 'size', 'color', 'brand', 'material', 'condition', 'care_instructions'], 4);
-    }
-    public function Sports(Request $request)
-    {
-        return $this->insertProduct($request, sport::class, ['type_of_equipment', 'brand', 'condition', 'size_weight', 'features', 'suitable_sport_activity', 'warranty_information', 'usage_instructions'], 5);
-    }
-    public function Books(Request $request)
-    {
-        return $this->insertProduct($request, book::class, ['title', 'author_artist', 'genre', 'format', 'condition', 'edition', 'isbn_upc', 'warranty_information', 'description'], 6);
-    }
-    public function Antiques(Request $request)
-    {
-        return $this->insertProduct($request, antique::class, ['type_of_item', 'era_period', 'material', 'condition', 'provenance_location', 'rarity', 'historical_significance', 'certification'], 7);
-    }
-    public function Cars(Request $request)
-    {
-        return $this->insertProduct($request, car::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'fuel_type', 'owner', 'transmission_type'], 8);
-    }
-    public function Motorcycle(Request $request)
-    {
-        return $this->insertProduct($request, motorcycle::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'owner'], 9);
-    }
-    public function Scooter(Request $request)
-    {
-        return $this->insertProduct($request, scooter::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'owner'], 10);
-    }
-    public function Bicycle(Request $request)
-    {
-        return $this->insertProduct($request, bicycle::class, ['brand'], 11);
-    }
-    public function Toys(Request $request)
-    {
-        return $this->insertProduct(
-            $request,
-            toy::class,
-            ['type_of_toy_game', 'age_group', 'brand', 'condition', 'description', 'safety_information', 'assembly_required', 'recommended_use'],
-            12
-        );
-    }
-    public function Music(Request $request)
-    {
-        return $this->insertProduct(
-            $request,
-            music::class,
-            ['type_of_instrument', 'brand', 'condition', 'material', 'accessories_included', 'sound_characteristics'],
-            13
-        );
-    }
-    private function insertProduct($request, $model, $dataKeys, $category)
+    private function insertProducts($request)
     {
         $productData = $request->all();
         DB::beginTransaction();
         try {
             // Insert into products table
-            $products  = product::findOrFail($request->id);
+            $productData['category_id'] = $request->category_id; // Assuming $categoryType is the category ID
+            $product = Product::create($productData);
+
+            // Get category-specific information
+            $category = category::where('id', $request->category_id)->first();
+
+            if (!$category) {
+                throw new \Exception('Invalid category type');
+            }
+
+            // foreach (json_decode($category->fields, true) as $field) {
+            //     $validationRules[$field] = 'required|string|max:255'; // Adjust the validation rules as needed
+            // }
+            // $validatedData = $request->validate($validationRules);
+            $onlyarray = [];
+            $data = json_decode($category->fields, true);
+            for ($i = 0; $i < count($data); $i++) {
+                $onlyarray[$i] = $data[$i];
+            }
+            $dynamicModel = new DynamicModel();
+            $dynamicModel->setTableBasedOnCondition($category->function_name, $onlyarray);
+            // Insert into specific table (home_appliances or electronics or any other categoric fields)
+            $specificData = $request->only($onlyarray);
+            $specificData['product_id'] = $product->id;
+            $dynamicModel->create($specificData);
+
+            // Store the uploaded image paths
+            if ($request->has('image_urls')) {
+                foreach ($request->file('image_urls') as $index => $image) {
+                    $imageName = time() . $index . '_' . $image->getClientOriginalName();
+                    $image->move(public_path('images'), $imageName);
+                    $productImage = new product_image([
+                        'product_id' => $product->id,
+                        'image_url' => $imageName,
+                    ]);
+                    $productImage->save();
+                }
+            } else {
+                return response()->json(['error' => 'Image is required'], 422);
+            }
+            DB::commit();
+            return response()->json(['success' => 'successful', "product_id" => $product->id, "status" => 200], 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['error' => 'Failed to insert data. ' . $e], 500);
+        }
+    }
+
+    private function insertProduct($request, $model, $dataKeys, $category)
+    {
+        $productData = $request->validated();
+        DB::beginTransaction();
+        try {
+            // Insert into products table
             $productData['category_id'] = $category;
-            $products->update($productData);
+            $product = Product::create($productData);
 
             // Insert into specific table (home_appliances or electronics or any other categoric fields)
             $specificData = $request->only($dataKeys);
-            $specificModel = $model::where('product_id', $request->id)->firstOrFail();
-            $specificModel->update($specificData);
+            $specificData['product_id'] = $product->id;
+            $specificModel = $model::create($specificData);
+
             // Store the uploaded image paths
-            // $existingImages = Product_image::where('product_id', $request->id)->get();
-            // foreach ($existingImages as $existingImage) {
-            //     $imagePath = public_path('images') . '/' . $existingImage->image_url;
-            //     if (file_exists($imagePath)) {
-            //         unlink($imagePath);
-            //     }
-            // }
-            // if ($request->has('image_urls')) {
-            //     foreach ($request->file('image_urls') as $index => $image) {
-            //         $imageName = time() . $index . '_' . $image->getClientOriginalName();
-            //         $image->move(public_path('images'), $imageName);
-            //         $productImage = new product_image([
-            //             'product_id' => $request->id,
-            //             'image_url' => $imageName,
-            //         ]);
-            //         $productImage->save();
-            //     }
-            // } else {
-            //     return response()->json(['error' => 'Image is required'], 422);
-            // }
-            if (DB::commit()) {
-                return 'Updated successfully';
+            if ($request->has('image_urls')) {
+                foreach ($request->file('image_urls') as $index => $image) {
+                    $imageName = time() . $index . '_' . $image->getClientOriginalName();
+                    $image->move(public_path('images'), $imageName);
+                    $productImage = new product_image([
+                        'product_id' => $product->id,
+                        'image_url' => $imageName,
+                    ]);
+                    $productImage->save();
+                }
+            } else {
+                return response()->json(['error' => 'Image is required'], 422);
             }
+            DB::commit();
+            return response()->json(['success' => 'successful', "product_id" => $product->id, "status" => 200], 200);
         } catch (\Exception $e) {
             DB::rollback();
-            return 'Failed to insert data.';
+            return response()->json(['error' => 'Failed to insert data. ' . $e], 500);
         }
     }
 }
