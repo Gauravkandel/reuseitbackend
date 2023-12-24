@@ -27,7 +27,7 @@ Route::controller(SellProductController::class)->group(function () {
     foreach ($category as $cat) {
         Route::post('/' . $cat->function_name, $cat->function_name);
     }
-    Route::post('/insert', 'insertProductByCategory');
+    Route::post('/sellproducts', 'insertProductByCategory');
     Route::get('/getCategory', 'getCategory');
     // Route::post('/homeappliances', 'HomeAppliances');
     // Route::post('/electronics', 'Electronics');
