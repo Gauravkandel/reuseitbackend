@@ -76,6 +76,7 @@ class SellProductController extends Controller
     }
     public function Bicycle(BicycleRequest $request)
     {
+
         return $this->insertProduct($request, bicycle::class, ['brand'], 11);
     }
     public function Toys(ToysRequest $request)
