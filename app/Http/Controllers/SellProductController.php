@@ -77,15 +77,15 @@ class SellProductController extends Controller
     {
         return $this->insertProduct($request, car::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'fuel_type', 'owner', 'transmission_type'], 8);
     }
-    public function motorcycle(MotorRequest $request)
+    public function motorcycles(MotorRequest $request)
     {
         return $this->insertProduct($request, motorcycle::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'owner'], 9);
     }
-    public function scooter(ScooterRequest $request)
+    public function scooters(ScooterRequest $request)
     {
         return $this->insertProduct($request, scooter::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'owner'], 10);
     }
-    public function bicycle(BicycleRequest $request)
+    public function bicycles(BicycleRequest $request)
     {
 
         return $this->insertProduct($request, bicycle::class, ['brand'], 11);
@@ -99,7 +99,7 @@ class SellProductController extends Controller
             12
         );
     }
-    public function music(MusicRequest $request)
+    public function musics(MusicRequest $request)
     {
         return $this->insertProduct(
             $request,
@@ -204,8 +204,7 @@ class SellProductController extends Controller
             // Insert into specific table (home_appliances or electronics or any other categoric fields)
             $specificData = $request->only($dataKeys);
             $specificData['product_id'] = $product->id;
-            $specificModel = $model::create($specificData);
-
+            $model::create($specificData);
             // Store the uploaded image paths
             if ($request->has('image_urls')) {
                 foreach ($request->file('image_urls') as $index => $image) {
