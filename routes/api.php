@@ -30,6 +30,7 @@ Route::controller(SellProductController::class)->group(function () {
     Route::post('/sellproducts', 'insertProducts');
     Route::get('/getCategory', 'getCategory');
     Route::post('/makeCategory', 'makeCategory');
+    Route::get('/getindivcategory/{id}', 'getIndivCategory');
     // Route::post('/homeappliances', 'HomeAppliances');
     // Route::post('/electronics', 'Electronics');
     // Route::post('/furnitures', 'Furnitures');

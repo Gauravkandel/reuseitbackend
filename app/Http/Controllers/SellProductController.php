@@ -130,6 +130,12 @@ class SellProductController extends Controller
         $category_data['admin_status'] = 1;
         category::create($category_data);
     }
+    public function getIndivCategory($id)
+    {
+        $category  = category::findorFail($id);
+        $category['fields'] = json_decode($category['fields'], true);
+        return response()->json($category);
+    }
     public function insertProducts(Request $request)
     {
         DB::beginTransaction();
