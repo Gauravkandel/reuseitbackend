@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string("District");
             $table->string("Municipality");
             $table->integer('price');
+            $table->json("features")->nullable();
             $table->timestamps();
         });
     }

@@ -27,11 +27,15 @@ class ViewProductController extends Controller
     public function getIndivProduct($id)
     {
         try {
-            $product = Product::with(['category', 'image'])->findOrFail($id);
+            $product = Product::with(['category', 'image', 'user'])->findOrFail($id);
 
             $category = $product->category;
-            $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
-
+            if ($category->admin_status === 0) {
+                $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
+            } else {
+                $data = json_decode($product->features, true);
+                $data['product'] = $product;
+            }
             return response()->json(['data' => $data], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['error' => 'Product not found'], 404);

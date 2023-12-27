@@ -17,6 +17,7 @@ class product extends Model
         'District',
         'Municipality',
         'price',
+        'features'
     ];
     public function setPnameAttribute($value)
     {

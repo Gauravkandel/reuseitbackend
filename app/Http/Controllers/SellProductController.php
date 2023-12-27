@@ -33,6 +33,7 @@ use App\Models\scooter;
 use App\Models\sport;
 use App\Models\toy;
 use App\Rules\ValidDimensions;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -48,7 +49,7 @@ class SellProductController extends Controller
     {
         return $this->insertProduct($request, electronic::class, ['type_of_electronic', 'brand', 'model', 'condition', 'warranty_information'], 1);
     }
-    public function homeAppliances(HomeApplianceRequest $request)
+    public function homeappliances(HomeApplianceRequest $request)
     {
         return $this->insertProduct($request, HomeAppliance::class, ['type_of_appliance', 'brand', 'model', 'capacity', 'features', 'condition', 'warranty_information'], 2);
     }
@@ -56,7 +57,7 @@ class SellProductController extends Controller
     {
         return $this->insertProduct($request, furniture::class, ['type_of_furniture', 'material', 'dimensions', 'color', 'style', 'condition', 'assembly_required'], 3);
     }
-    public function clothing(ClothingRequest $request)
+    public function clothings(ClothingRequest $request)
     {
         return $this->insertProduct($request, clothing::class, ['type_of_clothing_accessory', 'size', 'color', 'brand', 'material', 'condition', 'care_instructions'], 4);
     }
@@ -116,30 +117,42 @@ class SellProductController extends Controller
             13
         );
     }
-    public function insertProductByCategory(Request $request)
+    public function makeCategory(Request $request)
     {
-        return $this->insertProducts($request);
+        $category_data['category_name'] = $request->category_name;
+        $cat_data = $request->fields;
+        for ($i = 0; $i < count($cat_data); $i++) {
+            $cat_data[$i]['name'] = strtolower(str_replace(' ', '_', $cat_data[$i]['label']));
+            $cat_data[$i]['label'] = ucfirst($cat_data[$i]['label']);
+        }
+        $category_data['fields'] = json_encode($cat_data, true);
+        $category_data['function_name'] = $request->category_name;
+        $category_data['admin_status'] = 1;
+        category::create($category_data);
     }
-    private function insertProducts($request)
+    public function insertProducts(Request $request)
     {
-        $productData = $request->all();
         DB::beginTransaction();
         try {
-
-            $category = category::where('id', $request->category_id)->first();
-            $onlyarray = [];
-            $data = json_decode($category->fields, true);
             $validationRules = [];
-
-            foreach ($data as $fieldName) {
-                if ($fieldName != 'product_id') {
-                    $validationRules[$fieldName] = 'required|string|max:255';
-                }
-                if ($fieldName === "dimensions") {
-                    $validationRules[$fieldName] = ['required', 'string', new ValidDimensions];
+            $products_feature = [];
+            $category = category::findorFail($request->category_id);
+            if (!$category) {
+                return response()->json("Category not found");
+            }
+            $category_fields = json_decode($category->fields, true);
+            for ($i = 0; $i < count($category_fields); $i++) {
+                $products_feature[$category_fields[$i]['name']] = $request[$category_fields[$i]['name']];
+            }
+            $productData = $request->all();
+            $productData['features'] = json_encode($products_feature, true);
+            foreach ($category_fields as $fieldName) {
+                if ($fieldName['type'] === "text") {
+                    $validationRules[$fieldName['name']] = 'required|string|max:255';
+                } else if ($fieldName['type'] === "number") {
+                    $validationRules[$fieldName['name']] = 'required|integer|min:0';
                 }
             }
-
             $validationRules += [
                 'user_id' => 'required|exists:users,id',
                 'pname' => 'required|string|max:255',
@@ -148,31 +161,12 @@ class SellProductController extends Controller
                 'District' => 'required|string',
                 'Municipality' => 'required|string',
                 'price' => 'required|integer|max:100000000',
+                'image_urls.*' => 'image|mimes:jpeg,png,jpg,webp',
+
             ];
             $request->validate($validationRules);
+            $product =  Product::create($productData);
 
-            for ($i = 0; $i < count($data); $i++) {
-                $onlyarray[$i] = $data[$i];
-            }
-            // Insert into products table
-            $productData['category_id'] = $request->category_id; // Assuming $categoryType is the category ID
-            $product = Product::create($productData);
-
-            // Get category-specific information
-
-            if (!$category) {
-                throw new \Exception('Invalid category type');
-            }
-
-
-            $dynamicModel = new DynamicModel();
-            $dynamicModel->setTableBasedOnCondition($category->function_name, $onlyarray);
-            // Insert into specific table (home_appliances or electronics or any other categoric fields)
-            $specificData = $request->only($onlyarray);
-            $specificData['product_id'] = $product->id;
-            $dynamicModel->create($specificData);
-
-            // Store the uploaded image paths
             if ($request->has('image_urls')) {
                 foreach ($request->file('image_urls') as $index => $image) {
                     $imageName = time() . $index . '_' . $image->getClientOriginalName();
@@ -194,12 +188,10 @@ class SellProductController extends Controller
             $errors = collect($e->validator->errors()->all())->flatten();
 
             return response()->json(['errors' => $errors], 422);
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json(['error' => 'Failed to insert data. ' . $e->getMessage()], 500);
+        } catch (Exception $e) {
+            return response()->json(["error" => $e->getMessage()]);
         }
     }
-
     private function insertProduct($request, $model, $dataKeys, $category)
     {
         $productData = $request->validated();
