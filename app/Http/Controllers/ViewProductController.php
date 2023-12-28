@@ -34,6 +34,7 @@ class ViewProductController extends Controller
                 $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
             } else {
                 $data = json_decode($product->features, true);
+                $data['fields'] = json_encode($category->fields, true);
                 $data['product'] = $product;
             }
             return response()->json(['data' => $data], 200);
