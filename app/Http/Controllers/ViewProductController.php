@@ -28,7 +28,7 @@ class ViewProductController extends Controller
     {
         try {
             $product = Product::with(['category', 'image', 'user'])->findOrFail($id);
-
+            $data  = [];
             $category = $product->category;
             if ($category->admin_status === 0) {
                 $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
@@ -36,6 +36,7 @@ class ViewProductController extends Controller
                 $data = json_decode($product->features, true);
                 $data['fields'] = json_decode($category->fields, true);
                 $data['product'] = $product;
+                $data = [$data];
             }
             return response()->json(['data' => $data], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
