@@ -82,8 +82,14 @@ class DashboardController extends Controller
 
                 $category = $product->category->category_name;
 
-                $data = $this->ProductServices->getProductData($category, $id); //sending data to function getproductData
-
+                if ($category->admin_status === 0) {
+                    $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
+                } else {
+                    $data = json_decode($product->features, true);
+                    $data['fields'] = json_decode($category->fields, true);
+                    $data['product'] = $product;
+                    $data = [$data];
+                }
                 return response()->json(['data' => $data], 200);
             } else {
                 return response()->json(['error' => 'UnAuthorized to view data'], 401);
@@ -95,98 +101,118 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Something went wrong'], 500);
         }
     }
-    //update Products
-    public function insertProductByCategory(Request $request)
+    public function electronics(ElectronicsRequest $request)
     {
-        return $this->insertProducts($request);
+        return $this->UpdateProduct($request, electronic::class, ['type_of_electronic', 'brand', 'model', 'condition', 'warranty_information'], 1);
     }
-    private function insertProducts($request)
+    public function homeappliances(HomeApplianceRequest $request)
     {
-        $productData = $request->all();
-        DB::beginTransaction();
-        try {
-            // Insert into products table
-            $productData['category_id'] = $request->category_id; // Assuming $categoryType is the category ID
-            $product = Product::create($productData);
-
-            // Get category-specific information
-            $category = category::where('id', $request->category_id)->first();
-
-            if (!$category) {
-                throw new \Exception('Invalid category type');
-            }
-
-            // foreach (json_decode($category->fields, true) as $field) {
-            //     $validationRules[$field] = 'required|string|max:255'; // Adjust the validation rules as needed
-            // }
-            // $validatedData = $request->validate($validationRules);
-            $onlyarray = [];
-            $data = json_decode($category->fields, true);
-            for ($i = 0; $i < count($data); $i++) {
-                $onlyarray[$i] = $data[$i];
-            }
-            $dynamicModel = new DynamicModel();
-            $dynamicModel->setTableBasedOnCondition($category->function_name, $onlyarray);
-            // Insert into specific table (home_appliances or electronics or any other categoric fields)
-            $specificData = $request->only($onlyarray);
-            $specificData['product_id'] = $product->id;
-            $dynamicModel->create($specificData);
-
-            // Store the uploaded image paths
-            if ($request->has('image_urls')) {
-                foreach ($request->file('image_urls') as $index => $image) {
-                    $imageName = time() . $index . '_' . $image->getClientOriginalName();
-                    $image->move(public_path('images'), $imageName);
-                    $productImage = new product_image([
-                        'product_id' => $product->id,
-                        'image_url' => $imageName,
-                    ]);
-                    $productImage->save();
-                }
-            } else {
-                return response()->json(['error' => 'Image is required'], 422);
-            }
-            DB::commit();
-            return response()->json(['success' => 'successful', "product_id" => $product->id, "status" => 200], 200);
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json(['error' => 'Failed to insert data. ' . $e], 500);
-        }
+        return $this->UpdateProduct($request, HomeAppliance::class, ['type_of_appliance', 'brand', 'model', 'capacity', 'features', 'condition', 'warranty_information'], 2);
     }
+    public function furnitures(FurnitureRequest $request)
+    {
+        return $this->UpdateProduct($request, furniture::class, ['type_of_furniture', 'material', 'dimensions', 'color', 'style', 'condition', 'assembly_required'], 3);
+    }
+    public function clothings(ClothingRequest $request)
+    {
+        return $this->UpdateProduct($request, clothing::class, ['type_of_clothing_accessory', 'size', 'color', 'brand', 'material', 'condition', 'care_instructions'], 4);
+    }
+    public function sports(SportsRequest $request)
+    {
+        return $this->UpdateProduct($request, sport::class, ['type_of_equipment', 'brand', 'condition', 'size_weight', 'features', 'suitable_sport_activity', 'warranty_information', 'usage_instructions'], 5);
+    }
+    public function books(BooksRequest $request)
+    {
+        return $this->UpdateProduct($request, book::class, ['title', 'author_artist', 'genre', 'format', 'condition', 'edition', 'isbn_upc', 'warranty_information', 'description'], 6);
+    }
+    public function antiques(AntiquesRequest $request)
+    {
+        return $this->UpdateProduct($request, antique::class, ['type_of_item', 'era_period', 'material', 'condition', 'provenance_location', 'rarity', 'historical_significance', 'certification'], 7);
+    }
+    public function cars(CarsRequest $request)
+    {
+        return $this->UpdateProduct($request, car::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'fuel_type', 'owner', 'transmission_type'], 8);
+    }
+    public function motorcycles(MotorRequest $request)
+    {
+        return $this->UpdateProduct($request, motorcycle::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'owner'], 9);
+    }
+    public function scooters(ScooterRequest $request)
+    {
+        return $this->UpdateProduct($request, scooter::class, ['brand', 'model', 'year', 'mileage', 'condition', 'km_driven', 'color', 'used_time', 'owner'], 10);
+    }
+    public function bicycles(BicycleRequest $request)
+    {
 
-    private function insertProduct($request, $model, $dataKeys, $category)
+        return $this->UpdateProduct($request, bicycle::class, ['brand'], 11);
+    }
+    public function toys(ToysRequest $request)
+    {
+        return $this->UpdateProduct(
+            $request,
+            toy::class,
+            ['type_of_toy_game', 'age_group', 'brand', 'condition', 'description', 'safety_information', 'assembly_required', 'recommended_use'],
+            12
+        );
+    }
+    public function musics(MusicRequest $request)
+    {
+        return $this->UpdateProduct(
+            $request,
+            music::class,
+            ['type_of_instrument', 'brand', 'condition', 'material', 'accessories_included', 'sound_characteristics'],
+            13
+        );
+    }
+    public function others(MusicRequest $request)
+    {
+        return $this->UpdateProduct(
+            $request,
+            music::class,
+            ['type_of_instrument', 'brand', 'condition', 'material', 'accessories_included', 'sound_characteristics'],
+            13
+        );
+    }
+    private function UpdateProduct($request, $model, $dataKeys, $category)
     {
         $productData = $request->validated();
         DB::beginTransaction();
         try {
             // Insert into products table
+            $product = Product::findOrFail($request->id); // Assuming $productId is the ID of the product to be updated
+            // Update product data
             $productData['category_id'] = $category;
-            $product = Product::create($productData);
+            $product->update($productData);
 
             // Insert into specific table (home_appliances or electronics or any other categoric fields)
             $specificData = $request->only($dataKeys);
-            $specificData['product_id'] = $product->id;
-            $specificModel = $model::create($specificData);
 
-            // Store the uploaded image paths
-            if ($request->has('image_urls')) {
-                foreach ($request->file('image_urls') as $index => $image) {
-                    $imageName = time() . $index . '_' . $image->getClientOriginalName();
-                    $image->move(public_path('images'), $imageName);
-                    $productImage = new product_image([
-                        'product_id' => $product->id,
-                        'image_url' => $imageName,
-                    ]);
-                    $productImage->save();
-                }
+            $specificRecord = $model::where('product_id', $request->id)->first();
+            if ($specificRecord) {
+                $specificRecord->update($specificData);
             } else {
-                return response()->json(['error' => 'Image is required'], 422);
+                $specificData['product_id'] = $product->id;
+                $model::create($specificData);
             }
+
+            // if ($request->has('image_urls')) {
+            //     foreach ($request->file('image_urls') as $index => $image) {
+            //         $imageName = time() . $index . '_' . $image->getClientOriginalName();
+            //         $image->move(public_path('images'), $imageName);
+            //         $productImage = new product_image([
+            //             'product_id' => $product->id,
+            //             'image_url' => $imageName,
+            //         ]);
+            //         $productImage->save();
+            //     }
+            // } else {
+            //     return response()->json(['error' => 'Image is required'], 422);
+            // }
             DB::commit();
-            return response()->json(['success' => 'successful', "product_id" => $product->id, "status" => 200], 200);
+            return response()->json(['success' => 'Successful Update'], 200);
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['error' => 'Failed to insert data. ' . $e], 500);
+            return response()->json(['error' => 'Failed to Update data. ' . $e], 500);
         }
     }
 }

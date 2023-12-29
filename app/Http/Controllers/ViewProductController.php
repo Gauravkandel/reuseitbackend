@@ -28,7 +28,6 @@ class ViewProductController extends Controller
     {
         try {
             $product = Product::with(['category', 'image', 'user'])->findOrFail($id);
-            $data  = [];
             $category = $product->category;
             if ($category->admin_status === 0) {
                 $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData

@@ -148,7 +148,7 @@ class ChatController extends Controller
         $receiverId = $request->id;
         $roomId = $this->createRoomId(auth()->id(), $receiverId);
 
-        broadcast(new TypingEvent($roomId, true, auth()->id()))->toOthers();
+        broadcast(new TypingEvent($roomId, false, auth()->id()))->toOthers();
 
         return response()->json(['status' => 'Not typing event sent']);
     }
