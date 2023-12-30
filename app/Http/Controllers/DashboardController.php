@@ -83,7 +83,8 @@ class DashboardController extends Controller
                 $category = $product->category->category_name;
 
                 if ($category->admin_status === 0) {
-                    $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
+                    $data = $this->ProductServices->getProductData($category, $id);
+                    //sending data to function getproductData
                 } else {
                     $data = json_decode($product->features, true);
                     $data['fields'] = json_decode($category->fields, true);
@@ -194,20 +195,21 @@ class DashboardController extends Controller
                 $specificData['product_id'] = $product->id;
                 $model::create($specificData);
             }
-
-            // if ($request->has('image_urls')) {
-            //     foreach ($request->file('image_urls') as $index => $image) {
-            //         $imageName = time() . $index . '_' . $image->getClientOriginalName();
-            //         $image->move(public_path('images'), $imageName);
-            //         $productImage = new product_image([
-            //             'product_id' => $product->id,
-            //             'image_url' => $imageName,
-            //         ]);
-            //         $productImage->save();
-            //     }
-            // } else {
-            //     return response()->json(['error' => 'Image is required'], 422);
-            // }
+            $pre_images = $request->old_image;
+            foreach ($pre_images as $pre_image) {
+                Product_image::find($pre_image)->delete();
+            }
+            if ($request->has('image_urls')) {
+                foreach ($request->file('image_urls') as $index => $image) {
+                    $imageName = time() . $index . '_' . $image->getClientOriginalName();
+                    $image->move(public_path('images'), $imageName);
+                    $productImage = new product_image([
+                        'product_id' => $product->id,
+                        'image_url' => $imageName,
+                    ]);
+                    $productImage->save();
+                }
+            }
             DB::commit();
             return response()->json(['success' => 'Successful Update'], 200);
         } catch (\Exception $e) {

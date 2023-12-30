@@ -11,7 +11,6 @@ use App\Models\Book;
 use App\Models\Antique;
 use App\Models\Car;
 use App\Models\Bicycle;
-use App\Models\DynamicModel;
 use App\Models\Motorcycle;
 use App\Models\Scooter;
 use App\Models\Toy;
@@ -23,8 +22,6 @@ class ProductService
     {
         switch ($category->category_name) {
             case "Electronics":
-                $dynamicModel = new DynamicModel();
-                $dynamicModel->setTableBasedOnCondition($category->function_name, json_decode($category->fields, true));
                 return Electronic::with(['product', 'product.image', 'product.category', 'product.user'])->where('product_id', $id)->get();
             case "Home Appliances":
                 return HomeAppliance::with(['product', 'product.image', 'product.category', 'product.user'])->where('product_id', $id)->get();
