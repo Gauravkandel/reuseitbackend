@@ -219,4 +219,65 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Failed to Update data. ' . $e], 500);
         }
     }
+    public function UpdateProducts(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $validationRules = [];
+            $products_feature = [];
+            $category = category::findorFail($request->category_id);
+            if (!$category) {
+                return response()->json("Category not found");
+            }
+            $category_fields = json_decode($category->fields, true);
+            for ($i = 0; $i < count($category_fields); $i++) {
+                $products_feature[$category_fields[$i]['name']] = $request[$category_fields[$i]['name']];
+            }
+            $productData = $request->all();
+            $productData['features'] = json_encode($products_feature, true);
+            foreach ($category_fields as $fieldName) {
+                if ($fieldName['type'] === "text") {
+                    $validationRules[$fieldName['name']] = 'required|string|max:255';
+                } else if ($fieldName['type'] === "number") {
+                    $validationRules[$fieldName['name']] = 'required|integer|min:0';
+                }
+            }
+            $validationRules += [
+                'user_id' => 'required|exists:users,id',
+                'pname' => 'required|string|max:255',
+                'description' => 'required|string',
+                'Province' => 'required|string',
+                'District' => 'required|string',
+                'Municipality' => 'required|string',
+                'price' => 'required|integer|max:100000000',
+                'image_urls.*' => 'image|mimes:jpeg,png,jpg,webp',
+            ];
+            $request->validate($validationRules);
+            $product =  Product::create($productData);
+
+            if ($request->has('image_urls')) {
+                foreach ($request->file('image_urls') as $index => $image) {
+                    $imageName = time() . $index . '_' . $image->getClientOriginalName();
+                    $image->move(public_path('images'), $imageName);
+                    $productImage = new product_image([
+                        'product_id' => $product->id,
+                        'image_url' => $imageName,
+                    ]);
+                    $productImage->save();
+                }
+            } else {
+                return response()->json(['error' => 'Image is required'], 422);
+            }
+            DB::commit();
+            return response()->json(['success' => 'successful', "product_id" => $product->id, "status" => 200], 200);
+        } catch (ValidationException $e) {
+            // Validation failed, return the validation errors
+            DB::rollback();
+            $errors = collect($e->validator->errors()->all())->flatten();
+
+            return response()->json(['errors' => $errors], 422);
+        } catch (Exception $e) {
+            return response()->json(["error" => $e->getMessage()]);
+        }
+    }
 }

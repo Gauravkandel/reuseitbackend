@@ -151,7 +151,7 @@ class SellProductController extends Controller
                 $products_feature[$category_fields[$i]['name']] = $request[$category_fields[$i]['name']];
             }
             $productData = $request->all();
-            $productData['features'] = json_encode($products_feature, true);
+            $productData['extra_features'] = json_encode($products_feature, true);
             foreach ($category_fields as $fieldName) {
                 if ($fieldName['type'] === "text") {
                     $validationRules[$fieldName['name']] = 'required|string|max:255';

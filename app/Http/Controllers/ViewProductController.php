@@ -32,7 +32,7 @@ class ViewProductController extends Controller
             if ($category->admin_status === 0) {
                 $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
             } else {
-                $data = json_decode($product->features, true);
+                $data = json_decode($product->extra_features, true);
                 $data['fields'] = json_decode($category->fields, true);
                 $data['product'] = $product;
                 $data = [$data];
