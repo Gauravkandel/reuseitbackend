@@ -36,6 +36,7 @@ use App\Models\toy;
 use Illuminate\Http\Request;
 use App\Services\ProductService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class DashboardController extends Controller
 {
@@ -225,16 +226,14 @@ class DashboardController extends Controller
         try {
             $validationRules = [];
             $products_feature = [];
+            $product = Product::findOrFail($request->id); //$request->id is the ID of the product to be updated
+            $productData['category_id'] = $request->category_id;
             $category = category::findorFail($request->category_id);
-            if (!$category) {
-                return response()->json("Category not found");
-            }
             $category_fields = json_decode($category->fields, true);
             for ($i = 0; $i < count($category_fields); $i++) {
                 $products_feature[$category_fields[$i]['name']] = $request[$category_fields[$i]['name']];
             }
-            $productData = $request->all();
-            $productData['features'] = json_encode($products_feature, true);
+            $productData['extra_features'] = json_encode($products_feature, true);
             foreach ($category_fields as $fieldName) {
                 if ($fieldName['type'] === "text") {
                     $validationRules[$fieldName['name']] = 'required|string|max:255';
@@ -253,8 +252,13 @@ class DashboardController extends Controller
                 'image_urls.*' => 'image|mimes:jpeg,png,jpg,webp',
             ];
             $request->validate($validationRules);
-            $product =  Product::create($productData);
-
+            $product->update($productData);
+            $pre_images = $request->old_image;
+            if ($pre_images != null) {
+                foreach ($pre_images as $pre_image) {
+                    Product_image::find($pre_image)->delete();
+                }
+            }
             if ($request->has('image_urls')) {
                 foreach ($request->file('image_urls') as $index => $image) {
                     $imageName = time() . $index . '_' . $image->getClientOriginalName();
@@ -265,18 +269,14 @@ class DashboardController extends Controller
                     ]);
                     $productImage->save();
                 }
-            } else {
-                return response()->json(['error' => 'Image is required'], 422);
             }
             DB::commit();
-            return response()->json(['success' => 'successful', "product_id" => $product->id, "status" => 200], 200);
+            return response()->json(['success' => 'Successful Update'], 200);
         } catch (ValidationException $e) {
             // Validation failed, return the validation errors
             DB::rollback();
-            $errors = collect($e->validator->errors()->all())->flatten();
-
-            return response()->json(['errors' => $errors], 422);
-        } catch (Exception $e) {
+            return response()->json(['errors' => $e->validator->errors()], 422);
+        } catch (\Exception $e) {
             return response()->json(["error" => $e->getMessage()]);
         }
     }

@@ -191,9 +191,8 @@ class SellProductController extends Controller
         } catch (ValidationException $e) {
             // Validation failed, return the validation errors
             DB::rollback();
-            $errors = collect($e->validator->errors()->all())->flatten();
 
-            return response()->json(['errors' => $errors], 422);
+            return response()->json(['errors' => $e->validator->errors()], 422);
         } catch (Exception $e) {
             return response()->json(["error" => $e->getMessage()]);
         }
