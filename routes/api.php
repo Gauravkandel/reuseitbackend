@@ -59,7 +59,7 @@ Route::group(['middleware' => 'api'], function () {
     //For dashboard
     $category = category::all();
     foreach ($category as $cat) {
-        Route::patch('update/' . $cat->function_name, [DashboardController::class, $cat->function_name]);
+        Route::post('update/' . $cat->function_name, [DashboardController::class, $cat->function_name]);
     }
     Route::get('/myproducts', [DashboardController::class, 'myProducts']);
     Route::get('/deleteads/{id}', [DashboardController::class, 'deleteAds']);

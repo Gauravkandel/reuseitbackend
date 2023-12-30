@@ -196,8 +196,10 @@ class DashboardController extends Controller
                 $model::create($specificData);
             }
             $pre_images = $request->old_image;
-            foreach ($pre_images as $pre_image) {
-                Product_image::find($pre_image)->delete();
+            if ($pre_images != null) {
+                foreach ($pre_images as $pre_image) {
+                    Product_image::find($pre_image)->delete();
+                }
             }
             if ($request->has('image_urls')) {
                 foreach ($request->file('image_urls') as $index => $image) {
