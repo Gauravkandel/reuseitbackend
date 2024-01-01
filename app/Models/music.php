@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class music extends Model
 {
     use HasFactory;
+    protected $table = "musics";
     protected $fillable = [
+        'product_id',
         'type_of_instrument',
         'brand',
         'condition',

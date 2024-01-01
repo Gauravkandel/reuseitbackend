@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EngagementRecord;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Services\ProductService;
@@ -28,6 +29,17 @@ class ViewProductController extends Controller
     {
         try {
             $product = Product::with(['category', 'image', 'user'])->findOrFail($id);
+            if ($product) {
+                // Find or create the engagement record for the current month and year
+                $engagementRecord = EngagementRecord::firstOrNew([
+                    'product_id' => $product->id,
+                    'month' => now()->month,
+                    'year' => now()->year,
+                ]);
+                // Increment the engagement count for the current record
+                $engagementRecord->engagement_count++;
+                $engagementRecord->save();
+            }
             $category = $product->category;
             if ($category->admin_status === 0) {
                 $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
@@ -37,6 +49,8 @@ class ViewProductController extends Controller
                 $data['product'] = $product;
                 $data = [$data];
             }
+
+
             return response()->json(['data' => $data], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['error' => 'Product not found'], 404);

@@ -27,6 +27,10 @@ class product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    public function EngagementRecord()
+    {
+        return $this->hasMany(EngagementRecord::class);
+    }
     public function image()
     {
         return $this->hasMany(product_image::class);
