@@ -226,7 +226,9 @@ class DashboardController extends Controller
         try {
             $validationRules = [];
             $products_feature = [];
-            $product = Product::findOrFail($request->id); //$request->id is the ID of the product to be updated
+            $product = Product::findOrFail($request->id);
+            //$request->id is the ID of the product to be updated
+            $productData = $request->all();
             $productData['category_id'] = $request->category_id;
             $category = category::findorFail($request->category_id);
             $category_fields = json_decode($category->fields, true);
