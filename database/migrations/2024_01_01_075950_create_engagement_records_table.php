@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->unsignedInteger('engagement_count')->default(0);
-            $table->unsignedInteger('month');
+            $table->string('month');
             $table->unsignedInteger('year');
             $table->timestamps();
 

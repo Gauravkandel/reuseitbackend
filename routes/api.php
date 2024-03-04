@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
@@ -77,5 +78,8 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('/getUsers', [ChatController::class, 'getUsers']);
     Route::get('/user', [ChatController::class, 'InitUser']);
     Route::get('/userdetails/{id}', [ChatController::class, 'ChatProfile']);
+});
+Route::group(['middleware' => 'api'], function () {
+    Route::get("/sellAnalytics", [AnalyticsController::class, "sellAnalytics"]);
 });
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);

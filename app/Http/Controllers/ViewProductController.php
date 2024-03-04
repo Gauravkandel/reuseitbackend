@@ -96,7 +96,7 @@ class ViewProductController extends Controller
 
         $page = $request->query('page', 1);
         $limit = $request->query('limit', 10);
-        $products = $query->skip(($page - 1) * $limit)->take($limit)->get();
+        $products = $query->skip(($page - 1) * $limit)->where('status', 0)->take($limit)->get();
 
         return response()->json($products);
     }
