@@ -21,14 +21,14 @@ class AnalyticsController extends Controller
         $analyticsData = collect(range(1, 12))->map(function ($month) use ($user, $currentYear) {
             $currentMonthSells = Product::where('user_id', $user->id)
                 ->where('status', 1)
-                ->whereYear('updated_at', $currentYear)
-                ->whereMonth('updated_at', $month)
+                ->whereYear('sold_at', $currentYear)
+                ->whereMonth('sold_at', $month)
                 ->sum('selling_price');
 
             $previousYearSells = Product::where('user_id', $user->id)
                 ->where('status', 1)
-                ->whereYear('updated_at', $currentYear - 1)
-                ->whereMonth('updated_at', $month)
+                ->whereYear('sold_at', $currentYear - 1)
+                ->whereMonth('sold_at', $month)
                 ->sum('selling_price');
 
             return [

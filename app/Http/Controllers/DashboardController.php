@@ -35,6 +35,7 @@ use App\Models\sport;
 use App\Models\toy;
 use Illuminate\Http\Request;
 use App\Services\ProductService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -72,6 +73,7 @@ class DashboardController extends Controller
         $productdata = product::find($product_id);
         $productdata->status = 1;
         $productdata->selling_price =  $product_sp;
+        $productdata->sold_at = Carbon::now();
         $productdata->save();
         return response()->json(['message' => 'successfull'], 200);
     }
