@@ -14,4 +14,8 @@ class EngagementRecord extends Model
         'year',
         'engagement_count'
     ];
+    public function product()
+    {
+        return $this->belongsTo(product::class);
+    }
 }

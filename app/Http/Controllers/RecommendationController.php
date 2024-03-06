@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\category;
+use App\Models\EngagementRecord;
 use App\Models\product;
 use App\Models\recommendation;
 use Illuminate\Http\Request;
@@ -18,6 +19,17 @@ class RecommendationController extends Controller
         $seller_id = $product->user_id;
         if ($user_id) {
             if ($seller_id != $user_id) {
+                if ($product) {
+                    // Find or create the engagement record for the current month and year
+                    $engagementRecord = EngagementRecord::firstOrNew([
+                        'product_id' => $product->id,
+                        'month' => now()->month,
+                        'year' => now()->year,
+                    ]);
+                    // Increment the engagement count for the current record
+                    $engagementRecord->engagement_count = $engagementRecord->engagement_count + 1;
+                    $engagementRecord->save();
+                }
                 $userRecommend = recommendation::where('user_id', $user_id)->get();
                 $categoryExists = false;
                 foreach ($userRecommend as $recommendation_data) {

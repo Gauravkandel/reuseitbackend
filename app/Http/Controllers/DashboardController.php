@@ -71,6 +71,9 @@ class DashboardController extends Controller
         $product_id = $request->product_id;
         $product_sp = $request->selling_price;
         $productdata = product::find($product_id);
+        if (!$product_sp) {
+            $product_sp = $productdata->price;
+        }
         $productdata->status = 1;
         $productdata->selling_price =  $product_sp;
         $productdata->sold_at = Carbon::now();

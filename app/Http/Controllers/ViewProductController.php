@@ -29,17 +29,6 @@ class ViewProductController extends Controller
     {
         try {
             $product = Product::with(['category', 'image', 'user'])->findOrFail($id);
-            if ($product) {
-                // Find or create the engagement record for the current month and year
-                $engagementRecord = EngagementRecord::firstOrNew([
-                    'product_id' => $product->id,
-                    'month' => now()->month,
-                    'year' => now()->year,
-                ]);
-                // Increment the engagement count for the current record
-                $engagementRecord->engagement_count++;
-                $engagementRecord->save();
-            }
             $category = $product->category;
             if ($category->admin_status === 0) {
                 $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
