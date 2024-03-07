@@ -31,13 +31,12 @@ class AnalyticsController extends Controller
                 ->whereYear('sold_at', $currentYear - 1)
                 ->whereMonth('sold_at', $month)
                 ->sum('selling_price');
-
+            $this_year = Carbon::now()->format('Y') - 0;
+            $prev_year = Carbon::now()->format('Y') - 1;
             return [
-                'this_year' => Carbon::now()->format('Y') - 0,
-                'prev_year' => Carbon::now()->format('Y') - 1,
                 'month' => Carbon::create()->month($month)->shortEnglishMonth,
-                'current_total_selling_price' => $currentMonthSells,
-                'previous_total_selling_price' => $previousYearSells,
+                $this_year => $currentMonthSells,
+                $prev_year => $previousYearSells,
             ];
         });
 
