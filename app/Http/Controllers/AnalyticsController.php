@@ -18,8 +18,9 @@ class AnalyticsController extends Controller
     {
         $user = auth()->user();
         $currentYear = Carbon::now()->year;
+        $currentMonth = Carbon::now()->month;
 
-        $analyticsData = collect(range(1, 12))->map(function ($month) use ($user, $currentYear) {
+        $analyticsData = collect(range(1, $currentMonth))->map(function ($month) use ($user, $currentYear) {
             $currentMonthSells = Product::where('user_id', $user->id)
                 ->where('status', 1)
                 ->whereYear('sold_at', $currentYear)
@@ -48,7 +49,8 @@ class AnalyticsController extends Controller
     {
         $user = auth()->user();
         $currentYear = Carbon::now()->year;
-        $engagementData = collect(range(1, 12))->map(function ($month) use ($user, $currentYear) {
+        $currentMonth = Carbon::now()->month;
+        $engagementData = collect(range(1, $currentMonth))->map(function ($month) use ($user, $currentYear) {
             $currentMonthSells = EngagementRecord::join('products', 'engagement_records.product_id', '=', 'products.id')
                 ->where('products.user_id', $user->id)
                 ->whereYear('engagement_records.created_at', $currentYear)
