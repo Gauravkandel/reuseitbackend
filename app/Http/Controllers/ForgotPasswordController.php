@@ -18,7 +18,7 @@ class ForgotPasswordController extends Controller
             return response()->json(['error' => 'User not found.'], 404);
         }
         $token = Password::broker()->createToken($user);
-        $resetUrl = url("/reset-password?token=$token&email={$user->email}");
+        $resetUrl = url("http://localhost:3000/reset-password?token=$token&email={$user->email}");
         $user->notify(new ResetPasswordNotification($resetUrl));
         return response()->json(['message' => 'Reset link sent to your email.'], 200);
     }
