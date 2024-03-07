@@ -4,6 +4,7 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SellProductController;
 use App\Http\Controllers\verificationController;
@@ -85,3 +86,7 @@ Route::group(['middleware' => 'api'], function () {
     ROute::get("/engagementAnalytics", [AnalyticsController::class, "engagementAnalytics"]);
 });
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);
+//forgot Password
+Route::post("/forgotPassword", [ForgotPasswordController::class, "sendResetLinkEmail"]);
+
+Route::post('/reset-password', [ForgotPasswordController::class, "reset"]);

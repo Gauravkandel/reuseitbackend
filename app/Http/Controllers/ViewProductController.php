@@ -24,7 +24,6 @@ class ViewProductController extends Controller
         //pagination starts 1 to 10 and so on
         return response()->json($items);
     }
-
     public function getIndivProduct($id)
     {
         try {
