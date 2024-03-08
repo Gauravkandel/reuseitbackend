@@ -83,7 +83,8 @@ Route::group(['middleware' => 'api'], function () {
 });
 Route::group(['middleware' => 'api'], function () {
     Route::get("/sellAnalytics", [AnalyticsController::class, "sellAnalytics"]);
-    ROute::get("/engagementAnalytics", [AnalyticsController::class, "engagementAnalytics"]);
+    Route::get("/engagementAnalytics", [AnalyticsController::class, "engagementAnalytics"]);
+    Route::get("/pieAnalytics", [AnalyticsController::class, "pieCategory"]);
 });
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);
 //forgot Password

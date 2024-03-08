@@ -49,6 +49,7 @@ class AnalyticsController extends Controller
     {
         $user = auth()->user();
         $currentYear = Carbon::now()->year;
+        //get current month number
         $currentMonth = Carbon::now()->month;
         $engagementData = collect(range(1, $currentMonth))->map(function ($month) use ($user, $currentYear) {
             $currentMonthSells = EngagementRecord::join('products', 'engagement_records.product_id', '=', 'products.id')
@@ -74,5 +75,20 @@ class AnalyticsController extends Controller
         return response()->json([
             "engagementData" => $engagementData
         ]);
+    }
+    public function pieCategory()
+    {
+        $user = auth()->user();
+        $pieDetails = Product::with('category')
+            ->where('user_id', $user->id)->get();
+        // Group products by category ID and calculate the count for each category
+        $categoryCounts = $pieDetails->groupBy('category_id')->map(function ($products) {
+            return [
+                'name' => $products->first()->category->category_name,
+                'count' => $products->count()
+            ];
+        })->values()->all();
+
+        return response()->json(["category_names" => $categoryCounts]);
     }
 }
