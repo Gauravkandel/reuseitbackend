@@ -107,19 +107,21 @@ class AnalyticsController extends Controller
             ->whereMonth('engagement_records.created_at', $month - 1)
             ->where('status', 0)
             ->sum('engagement_count');
-        $percentageGap = ($currengagement - $prevengagement) / $currengagement * 100;
-
-        if ($percentageGap < 0) {
-            $status = "decreased";
-        } else if ($percentageGap > 0) {
-            $status = "increased";
-        } else {
-            $status = "unchanged";
-        }
         if ($currengagement == 0) {
             $percentageGap = 0;
             $status = "undefined";
+        } else {
+            $percentageGap = ($currengagement - $prevengagement) / $currengagement * 100;
+
+            if ($percentageGap < 0) {
+                $status = "decreased";
+            } else if ($percentageGap > 0) {
+                $status = "increased";
+            } else {
+                $status = "unchanged";
+            }
         }
+
         $engagedata['currengagement'] = $currengagement;
         $engagedata['percentageGap'] = $percentageGap . "%";
         $engagedata['status'] = $status;
