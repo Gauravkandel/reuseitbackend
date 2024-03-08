@@ -85,7 +85,7 @@ class AnalyticsController extends Controller
         $categoryCounts = $pieDetails->groupBy('category_id')->map(function ($products) {
             return [
                 'name' => $products->first()->category->category_name,
-                'count' => $products->count()
+                'value' => $products->count()
             ];
         })->values()->all();
 
