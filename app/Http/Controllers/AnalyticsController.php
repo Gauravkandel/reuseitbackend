@@ -67,8 +67,8 @@ class AnalyticsController extends Controller
             $prev_year = Carbon::now()->format('Y') - 1;
             return [
                 'month' => Carbon::create()->month($month)->shortEnglishMonth,
-                $this_year => $currentMonthSells,
-                $prev_year => $previousYearSells,
+                $this_year => $currentMonthSells + 0,
+                $prev_year => $previousYearSells + 0,
             ];
         });
 
@@ -90,5 +90,37 @@ class AnalyticsController extends Controller
         })->values()->all();
 
         return response()->json(["category_names" => $categoryCounts]);
+    }
+    public function getDashData()
+    {
+        $user = auth()->user();
+        $month = Carbon::now()->month;
+        $products = product::where('user_id', $user->id)->count();
+        $currengagement = EngagementRecord::join('products', 'engagement_records.product_id', '=', 'products.id')
+            ->where('products.user_id', $user->id)
+            ->whereMonth('engagement_records.created_at', $month)
+            ->where('status', 0)
+            ->sum('engagement_count');
+        $prevengagement = EngagementRecord::join('products', 'engagement_records.product_id', '=', 'products.id')
+            ->where('products.user_id', $user->id)
+            ->whereMonth('engagement_records.created_at', $month - 1)
+            ->where('status', 0)
+            ->sum('engagement_count');
+        $percentageGap = ($currengagement - $prevengagement) / $currengagement * 100;
+
+        if ($percentageGap < 0) {
+            $status = "decreased";
+        } else if ($percentageGap > 0) {
+            $status = "increased";
+        } else {
+            $status = "unchanged";
+        }
+        $engagedata['currengagement'] = $currengagement;
+        $engagedata['percentageGap'] = $percentageGap . "%";
+        $engagedata['status'] = $status;
+        return response()->json([
+            "products" => $products,
+            "Engagedata" => $engagedata
+        ]);
     }
 }
