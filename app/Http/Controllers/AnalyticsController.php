@@ -36,8 +36,8 @@ class AnalyticsController extends Controller
             $prev_year = Carbon::now()->format('Y') - 1;
             return [
                 'month' => Carbon::create()->month($month)->shortEnglishMonth,
-                $this_year => $currentMonthSells,
-                $prev_year => $previousYearSells,
+                $this_year => $currentMonthSells + 0,
+                $prev_year => $previousYearSells + 0,
             ];
         });
 
