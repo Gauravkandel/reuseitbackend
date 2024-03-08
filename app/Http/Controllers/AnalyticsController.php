@@ -123,7 +123,7 @@ class AnalyticsController extends Controller
         }
 
         $engagedata['currengagement'] = $currengagement;
-        $engagedata['percentageGap'] = $percentageGap . "%";
+        $engagedata['percentageGap'] = $percentageGap;
         $engagedata['status'] = $status;
         return response()->json([
             "products" => $products,
