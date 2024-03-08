@@ -108,15 +108,17 @@ class AnalyticsController extends Controller
             ->where('status', 0)
             ->sum('engagement_count');
         $percentageGap = ($currengagement - $prevengagement) / $currengagement * 100;
-        if ($currengagement == 0) {
-            $percentageGap = -100;
-        }
+
         if ($percentageGap < 0) {
             $status = "decreased";
         } else if ($percentageGap > 0) {
             $status = "increased";
         } else {
             $status = "unchanged";
+        }
+        if ($currengagement == 0) {
+            $percentageGap = 0;
+            $status = "undefined";
         }
         $engagedata['currengagement'] = $currengagement;
         $engagedata['percentageGap'] = $percentageGap . "%";
