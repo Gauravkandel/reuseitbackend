@@ -96,6 +96,7 @@ class AnalyticsController extends Controller
         $user = auth()->user();
         $month = Carbon::now()->month;
         $products = product::where('user_id', $user->id)->count();
+        $productsIncome = product::where('user_id', $user->id)->where("status", 1)->sum("selling_price");
         $currengagement = EngagementRecord::join('products', 'engagement_records.product_id', '=', 'products.id')
             ->where('products.user_id', $user->id)
             ->whereMonth('engagement_records.created_at', $month)
@@ -120,7 +121,8 @@ class AnalyticsController extends Controller
         $engagedata['status'] = $status;
         return response()->json([
             "products" => $products,
-            "Engagedata" => $engagedata
+            "Engagedata" => $engagedata,
+            "Income" => $productsIncome
         ]);
     }
 }
