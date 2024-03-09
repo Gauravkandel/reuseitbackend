@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BuyPackageController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForgotPasswordController;
@@ -86,6 +87,8 @@ Route::group(['middleware' => 'api'], function () {
     Route::get("/engagementAnalytics", [AnalyticsController::class, "engagementAnalytics"]);
     Route::get("/pieAnalytics", [AnalyticsController::class, "pieCategory"]);
     Route::get("/getDashData", [AnalyticsController::class, "getDashData"]);
+    //BuyPackage
+    Route::get("/getPackageProduct", [BuyPackageController::class, "displayBuyProduct"]);
 });
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);
 //forgot Password
