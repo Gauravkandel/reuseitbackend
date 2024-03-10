@@ -6,6 +6,7 @@ use App\Http\Controllers\BuyPackageController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SellProductController;
 use App\Http\Controllers\verificationController;
@@ -89,6 +90,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::get("/getDashData", [AnalyticsController::class, "getDashData"]);
     //BuyPackage
     Route::get("/getPackageProduct", [BuyPackageController::class, "displayBuyProduct"]);
+    Route::post("/khalti-Playload", [PaymentController::class, "KhaltiPlayload"]);
 });
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);
 //forgot Password
