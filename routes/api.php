@@ -91,6 +91,7 @@ Route::group(['middleware' => 'api'], function () {
     //BuyPackage
     Route::get("/getPackageProduct", [BuyPackageController::class, "displayBuyProduct"]);
     Route::post("/khalti-Playload", [PaymentController::class, "KhaltiPlayload"]);
+    Route::post("/khalti-success", [PaymentController::class, "OnSuccess"]);
 });
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);
 //forgot Password
