@@ -75,7 +75,6 @@ class ChatController extends Controller
         $notificationData = $notifications->pluck('data')->map(function ($item) {
             return $item[0]; // Check if the key exists
         });
-
         $notify['data'] = $notificationData->toArray();
         $notify['count'] = $user->unreadNotifications->count();
         event(new NotifyEvent($roomId, $notify));
