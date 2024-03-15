@@ -60,11 +60,10 @@ class ChatController extends Controller
         $notificationData = $notifications->pluck('data')->map(function ($item) {
             return $item[0];
         });
-
         $notify['data'] = $notificationData->toArray();
         $notify['count'] = $user->unreadNotifications->count();
         event(new NotifyEvent($roomId, $notify));
-        // return response()->json(["notification" => $notify]);
+        return response()->json(["notification" => $notify]);
     }
     public function getMessages($senderId, $receiverId)
     {
