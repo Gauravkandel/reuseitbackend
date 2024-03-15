@@ -58,7 +58,7 @@ class ChatController extends Controller
         $roomId =  $user->id;
         $notifications = $user->notifications()->get();
         $notificationData = $notifications->pluck('data')->map(function ($item) {
-            return isset($item[0]) ? $item[0] : ''; // Check if the key exists
+            return $item[0]; // Check if the key exists
         });
 
         $notify['data'] = $notificationData->toArray();
@@ -73,7 +73,7 @@ class ChatController extends Controller
         $roomId =  $user->id;
         $notifications = $user->notifications()->get();
         $notificationData = $notifications->pluck('data')->map(function ($item) {
-            return isset($item[0]) ? $item[0] : ''; // Check if the key exists
+            return $item[0]; // Check if the key exists
         });
 
         $notify['data'] = $notificationData->toArray();
