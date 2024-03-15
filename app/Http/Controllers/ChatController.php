@@ -70,6 +70,15 @@ class ChatController extends Controller
     {
         $user = auth()->user();
         $user->unreadNotifications->markAsRead();
+        $roomId =  $user->id;
+        $notifications = $user->notifications()->get();
+        $notificationData = $notifications->pluck('data')->map(function ($item) {
+            return isset($item[0]) ? $item[0] : ''; // Check if the key exists
+        });
+
+        $notify['data'] = $notificationData->toArray();
+        $notify['count'] = $user->unreadNotifications->count();
+        event(new NotifyEvent($roomId, $notify));
     }
     public function getMessages($senderId, $receiverId)
     {
