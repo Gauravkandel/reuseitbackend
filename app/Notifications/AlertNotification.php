@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class WelcomeMessageNotification extends Notification implements ShouldQueue
+class AlertNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     /**
@@ -15,6 +15,7 @@ class WelcomeMessageNotification extends Notification implements ShouldQueue
      */
     public function __construct()
     {
+        //
     }
 
     /**
@@ -26,14 +27,17 @@ class WelcomeMessageNotification extends Notification implements ShouldQueue
     {
         return ['mail', 'database'];
     }
+
     /**
      * Get the mail representation of the notification.
      */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->greeting('Welcome ' . $notifiable->name . ' to reuseit')
-            ->line('Thank you for using our Website!')
+            ->greeting('Hi ' . $notifiable->name)
+            ->line('Your Purchase of the business Package has been expired.')
+            ->line('Buy new packages with exclusive discount now.')
+            ->action('Buy Packages', 'http://localhost:3000/business_packages')
             ->Line('If you have any questions, feel free to contact us at contact@gmail.com.')
             ->salutation('Regards, Reuseit');
     }
@@ -45,6 +49,6 @@ class WelcomeMessageNotification extends Notification implements ShouldQueue
      */
     public function toDatabase(object $notifiable): array
     {
-        return ['Welcome ' . $notifiable->name . ' to reuseit,Thank you for using our Website!'];
+        return ['Your Purchase of the business Package has been expired.'];
     }
 }

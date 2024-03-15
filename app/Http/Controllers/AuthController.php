@@ -124,7 +124,17 @@ class AuthController extends Controller
         $userdata->ActiveTime = $now;
         $userdata->save();
     }
-
+    public function getNotification()
+    {
+        $user = auth()->user();
+        $notifications = $user->unreadNotifications;
+        $notificationData = $notifications->pluck('data');
+        return response()->json(["notification" => $notificationData]);
+    }
+    public function markasRead()
+    {
+        $user = auth()->user();
+    }
     /**
      * Get the token array structure.
      *
@@ -138,6 +148,7 @@ class AuthController extends Controller
         $notifications = $user->unreadNotifications->count();
         $user_details = [
             'user' => auth()->user(),
+            'notification_count' => $notifications
         ];
         $ttlInMinutes = 60 * 24 * 10; // 10 days in minutes
         $cookie = cookie('jwt', $token, $ttlInMinutes);

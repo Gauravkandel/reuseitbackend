@@ -14,7 +14,9 @@ class BuyPackageController extends Controller
 
     public function displayBuyProduct()
     {
-        $product = product::where('user_id', auth()->user()->id)->where("status", 0)->get();
+        $product = product::where('user_id', auth()->user()->id)
+            ->where("status", 0)
+            ->where('featured_package', 0)->get();
         return response()->json(["productsBuy" => $product]);
     }
 }

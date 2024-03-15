@@ -21,7 +21,7 @@ Route::post('/get_recommend', [RecommendationController::class, 'getrecommended'
 //for viewing products
 Route::controller(ViewProductController::class)->group(function () {
     Route::get('/getIndivProduct/{id}', 'getIndivProduct');
-    Route::get('/getdat', 'fetchalldata');
+    Route::get('/getdat', 'fetchalldata')->middleware('checkexpiry');
     Route::get('/filter', 'filter');
 });
 
@@ -60,6 +60,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/me', [AuthController::class, 'me']);
     Route::get('/activeuser', [AuthController::class, 'ActiveUser']);
     Route::get('/notactiveuser', [AuthController::class, 'NotActiveUser']);
+    Route::get('/getNotification', [AuthController::class, 'getNotification']);
 
     //For dashboard
     $category = category::all();
