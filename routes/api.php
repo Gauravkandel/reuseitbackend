@@ -60,7 +60,6 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/me', [AuthController::class, 'me']);
     Route::get('/activeuser', [AuthController::class, 'ActiveUser']);
     Route::get('/notactiveuser', [AuthController::class, 'NotActiveUser']);
-    Route::get('/getNotification', [AuthController::class, 'getNotification']);
 
     //For dashboard
     $category = category::all();
@@ -77,6 +76,8 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('/getmsgcount', [ChatController::class, 'getMessageCount']);
     Route::post('/typing', [chatController::class, 'typing']);
     Route::post('/notTyping', [chatController::class, 'notTyping']);
+    Route::get('/getNotification', [chatController::class, 'notityUser']);
+
     //phone verification
     Route::post('/sendotp', [verificationController::class, 'SendSms']);
     Route::Post('/verifyotp', [verificationController::class, 'VerifyOtp']);

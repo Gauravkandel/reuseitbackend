@@ -124,13 +124,7 @@ class AuthController extends Controller
         $userdata->ActiveTime = $now;
         $userdata->save();
     }
-    public function getNotification()
-    {
-        $user = auth()->user();
-        $notifications = $user->unreadNotifications;
-        $notificationData = $notifications->pluck('data');
-        return response()->json(["notification" => $notificationData]);
-    }
+
     public function markasRead()
     {
         $user = auth()->user();

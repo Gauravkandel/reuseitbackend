@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\chatEvent;
+use App\Events\NotifyEvent;
 use App\Events\TypingEvent;
 use App\Models\message;
 use App\Models\User;
@@ -50,6 +51,17 @@ class ChatController extends Controller
         $timeago = $createdAt->diffForHumans();
         event(new chatEvent($username, $msgs, $roomId, $timeago, $sender_id, $sender->Profile_image, $receiverdata->Profile_image, $msg_image));
         return response()->json(['status' => 'Message sent successfully']);
+    }
+    public function notityUser()
+    {
+        $user = auth()->user();
+        $roomId =  $user->id;
+        $notifications = $user->notifications()->get();
+        $notificationData = $notifications->pluck('data');
+        $notify['data'] = $notificationData;
+        $notify['count'] = $user->unreadNotifications->count();
+        event(new NotifyEvent($roomId, $notify));
+        // return response()->json(["notification" => $notify]);
     }
     public function getMessages($senderId, $receiverId)
     {
