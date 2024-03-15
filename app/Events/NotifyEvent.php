@@ -36,6 +36,6 @@ class NotifyEvent implements ShouldBroadcastNow
     }
     public function broadcastAs()
     {
-        return 'message';
+        return 'notification';
     }
 }
