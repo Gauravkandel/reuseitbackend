@@ -77,7 +77,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/typing', [chatController::class, 'typing']);
     Route::post('/notTyping', [chatController::class, 'notTyping']);
     Route::get('/getNotification', [chatController::class, 'notityUser']);
-    Route::get('/markAsRead', [chatController::class, 'markasread']);
+    Route::get('/markasread', [chatController::class, 'markAsRead']);
 
     //phone verification
     Route::post('/sendotp', [verificationController::class, 'SendSms']);
