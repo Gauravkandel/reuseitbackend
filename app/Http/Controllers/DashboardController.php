@@ -296,7 +296,7 @@ class DashboardController extends Controller
             'Province' => 'string|max:255',
             'District' => 'string|max:255',
             'Municipality' => 'string|max:255',
-            'Profile_image' => 'image|mimes:jpeg,png,jpg,webp',
+            'Profile_image' => 'nullable|image|mimes:jpeg,png,jpg,webp',
         ]);
         $id = auth()->user()->id;
         $user = User::findOrFail($id);
