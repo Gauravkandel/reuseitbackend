@@ -168,7 +168,6 @@ class SellProductController extends Controller
                 'Municipality' => 'required|string',
                 'price' => 'required|integer|max:100000000',
                 'image_urls.*' => 'image|mimes:jpeg,png,jpg,webp',
-
             ];
             $request->validate($validationRules);
             $product =  Product::create($productData);

@@ -37,7 +37,6 @@ class ForgotPasswordController extends Controller
                 $user->save();
             }
         );
-
         return $response == Password::PASSWORD_RESET
             ? response()->json(['message' => 'Password has been reset.'], 200)
             : response()->json(['error' => 'Unable to reset password.'], 400);

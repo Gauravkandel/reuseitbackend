@@ -287,4 +287,12 @@ class DashboardController extends Controller
             return response()->json(["error" => $e->getMessage()]);
         }
     }
+    public function viewUserDetails()
+    {
+        $userData = auth()->user();
+        return response()->json(["userdetails" => $userData]);
+    }
+    public function updateUserDetails(Request $request)
+    {
+    }
 }

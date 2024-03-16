@@ -42,7 +42,6 @@ class checkExpiryDate
                 $transaction->save();
             }
         } catch (\Exception $e) {
-            \Log::error('Error occurred in checkExpiryDate middleware: ' . $e->getMessage());
         }
 
         return $next($request);
