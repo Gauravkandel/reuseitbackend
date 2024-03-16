@@ -33,6 +33,7 @@ use App\Models\Product_image;
 use App\Models\scooter;
 use App\Models\sport;
 use App\Models\toy;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\ProductService;
 use Carbon\Carbon;
@@ -287,12 +288,32 @@ class DashboardController extends Controller
             return response()->json(["error" => $e->getMessage()]);
         }
     }
-    public function viewUserDetails()
+    public function viewUserDetails(Request $request)
     {
-        $userData = auth()->user();
-        return response()->json(["userdetails" => $userData]);
-    }
-    public function updateUserDetails(Request $request)
-    {
+        $request->validate([
+            'name' => 'string|max:255',
+            'email' => 'email|unique:users|max:255',
+            'Province' => 'string|max:255',
+            'District' => 'string|max:255',
+            'Municipality' => 'string|max:255',
+            'Profile_image' => 'image|mimes:jpeg,png,jpg,webp',
+        ]);
+        $id = auth()->user()->id;
+        $user = User::findOrFail($id);
+
+        // Update user details
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->Province = $request->Province;
+        $user->District = $request->District;
+        $user->Municipality = $request->Municipality;
+        if ($request->has('Profile_image')) {
+            $profile = $request->file('Profile_image');
+            $profile_name = time() . $profile->getClientOriginalName();
+            $profile->move(public_path('images'), $profile_name);
+            $user->Profile_image = $profile_name;
+        }
+        $user->save();
+        return response()->json(['message' => 'User details updated successfully']);
     }
 }
