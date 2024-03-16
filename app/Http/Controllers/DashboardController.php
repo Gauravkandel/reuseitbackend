@@ -292,7 +292,7 @@ class DashboardController extends Controller
     {
         $request->validate([
             'name' => 'string|max:255',
-            'email' => 'email|unique:users|max:255',
+            'email' => 'email|max:255',
             'Province' => 'string|max:255',
             'District' => 'string|max:255',
             'Municipality' => 'string|max:255',
