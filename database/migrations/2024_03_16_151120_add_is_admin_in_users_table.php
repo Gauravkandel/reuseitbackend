@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bicycles', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->string('brand');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean("isAdmin")->default(false);
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bicycles');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn("isAdmin");
+        });
     }
 };

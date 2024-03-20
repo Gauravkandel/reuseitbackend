@@ -5,17 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\EngagementRecord;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Services\ProductService;
 
 
 class ViewProductController extends Controller
 {
-    protected $ProductServices;
 
-    public function __construct(ProductService $ProductServices)
-    {
-        $this->ProductServices = $ProductServices;
-    }
+
     public function fetchAllData(Request $request)
     {
         $page = $request->query('page', 1);
@@ -29,15 +24,11 @@ class ViewProductController extends Controller
         try {
             $product = Product::with(['category', 'image', 'user'])->findOrFail($id);
             $category = $product->category;
-            if ($category->admin_status === 0) {
-                $data = $this->ProductServices->getProductData($category, $id);  //sending data to function getproductData
-            } else {
-                $data = json_decode($product->extra_features, true);
-                $data['fields'] = json_decode($category->fields, true);
-                $data['product'] = $product;
-                $data = [$data];
-            }
 
+            $data = json_decode($product->extra_features, true);
+            $data['fields'] = json_decode($category->fields, true);
+            $data['product'] = $product;
+            $data = [$data]; //sending data to function getproductData
 
             return response()->json(['data' => $data], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -67,7 +58,6 @@ class ViewProductController extends Controller
                     ->orWhere('Municipality', 'like', '%' . $searchTerm . '%');
             });
         }
-
         if ($category) {
             $query->whereHas('category', function ($q) use ($category) {
                 $q->where('category_name', $category);
