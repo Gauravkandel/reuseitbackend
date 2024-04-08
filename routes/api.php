@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BuyPackageController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SellProductController;
 use App\Http\Controllers\verificationController;
 use App\Http\Controllers\ViewProductController;
+use App\Http\Controllers\wantedadsController;
 use App\Models\category;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +62,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/me', [AuthController::class, 'me']);
     Route::get('/activeuser', [AuthController::class, 'ActiveUser']);
     Route::get('/notactiveuser', [AuthController::class, 'NotActiveUser']);
+    Route::post("/placewanted", [wantedadsController::class, 'addWantedAds']);
 
     //For dashboard
     $category = category::all();
@@ -97,7 +100,9 @@ Route::group(['middleware' => 'api'], function () {
     Route::get("/getPackageProduct", [BuyPackageController::class, "displayBuyProduct"]);
     Route::post("/khalti-Playload", [PaymentController::class, "KhaltiPlayload"]);
     Route::post("/khalti-success", [PaymentController::class, "OnSuccess"]);
+    //wantedads
 });
+Route::get("/getadmindash", [AdminController::class, "UsersInfo"])->middleware(['auth:api', 'isAdmin']);
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);
 //forgot Password
 Route::post("/forgotPassword", [ForgotPasswordController::class, "sendResetLinkEmail"]);

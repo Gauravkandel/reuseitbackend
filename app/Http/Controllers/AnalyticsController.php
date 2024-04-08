@@ -112,7 +112,6 @@ class AnalyticsController extends Controller
             $status = "undefined";
         } else {
             $percentageGap = ($currengagement - $prevengagement) / $currengagement * 100;
-
             if ($percentageGap < 0) {
                 $status = "decreased";
             } else if ($percentageGap > 0) {

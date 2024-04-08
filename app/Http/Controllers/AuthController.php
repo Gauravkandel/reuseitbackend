@@ -40,7 +40,9 @@ class AuthController extends Controller
                 // Email not found in the database
                 return response()->json(['error' => 'Email not found'], 401);
             }
-
+            if ($user->isBlocked == 1) {
+                return response()->json(['error' => 'User is blocked by admin.'], 401);
+            }
             // Check if the password is incorrect
             if (!Hash::check($credentials['password'], $user->password)) {
                 // Password doesn't match

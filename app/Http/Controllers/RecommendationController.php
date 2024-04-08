@@ -60,7 +60,6 @@ class RecommendationController extends Controller
         if (!$user_id) {
             return response()->json(['recommendations' => null], 400);
         }
-
         $categoryRecommendations = Recommendation::where('user_id', $user_id)
             ->orderByDesc('count')
             ->take(5)

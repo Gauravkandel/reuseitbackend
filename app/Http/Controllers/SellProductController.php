@@ -22,6 +22,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 
 class SellProductController extends Controller
 {
@@ -117,11 +118,17 @@ class SellProductController extends Controller
     }
     public function makeCategory(Request $request)
     {
-        $category_data['category_name'] = $request->category_name;
         $cat_data = $request->fields;
-        for ($i = 0; $i < count($cat_data); $i++) {
-            $cat_data[$i]['name'] = strtolower(str_replace(' ', '_', $cat_data[$i]['label']));
-            $cat_data[$i]['label'] = ucfirst($cat_data[$i]['label']);
+        $checkcats = Str::lower($request->category_name);
+        $checkcat = str_replace(' ', '', $checkcats);
+        $category_data['category_name'] = ucfirst($checkcats);
+        $categories = category::all();
+        foreach ($categories as $cate) {
+            $cate_names = Str::lower($cate->category_name);
+            $cate_name = str_replace(' ', '', $cate_names);
+            if ($checkcat == $cate_name) {
+                return response()->json(["error" => "Category is already present.", "status" => 401]);
+            }
         }
         $category_data['fields'] = json_encode($cat_data, true);
         $category_data['function_name'] = $request->category_name;
