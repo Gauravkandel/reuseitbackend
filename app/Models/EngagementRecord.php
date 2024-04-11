@@ -12,7 +12,8 @@ class EngagementRecord extends Model
         'product_id',
         'month',
         'year',
-        'engagement_count'
+        'engagement_count',
+        'user_id'
     ];
     public function product()
     {

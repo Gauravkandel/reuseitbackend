@@ -25,6 +25,7 @@ class RecommendationController extends Controller
                         'product_id' => $product->id,
                         'month' => now()->month,
                         'year' => now()->year,
+                        'user_id' => $user_id
                     ]);
                     // Increment the engagement count for the current record
                     $engagementRecord->engagement_count = $engagementRecord->engagement_count + 1;

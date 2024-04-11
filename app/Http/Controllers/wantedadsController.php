@@ -36,4 +36,9 @@ class wantedadsController extends Controller
         }
         return response()->json(['success' => 'successful', 'adsdata' => $ads, "status" => 200], 200);
     }
+    public function getwantedads()
+    {
+        $wantedadsdata = wantedad::orderBy('created_at', 'asc')->with('user')->get();
+        return response()->json(['WantedAds' => $wantedadsdata]);
+    }
 }

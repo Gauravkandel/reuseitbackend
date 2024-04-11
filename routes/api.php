@@ -101,6 +101,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post("/khalti-Playload", [PaymentController::class, "KhaltiPlayload"]);
     Route::post("/khalti-success", [PaymentController::class, "OnSuccess"]);
     //wantedads
+    Route::get("/getwantedads", [wantedadsController::class, "getwantedads"]);
 });
 Route::get("/getadmindash", [AdminController::class, "UsersInfo"])->middleware(['auth:api', 'isAdmin']);
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);
