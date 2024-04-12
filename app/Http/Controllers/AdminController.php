@@ -73,7 +73,7 @@ class AdminController extends Controller
     public function pieadminCategory()
     {
         $user = auth()->user();
-        $pieDetails = product::with('category')->all();
+        $pieDetails = product::with('category')->get();
         // Group products by category ID and calculate the count for each category
         $categoryCounts = $pieDetails->groupBy('category_id')->map(function ($products) {
             return [
