@@ -66,7 +66,10 @@ class RecommendationController extends Controller
             ->take(5)
             ->pluck('category_name');
 
-        $products = Product::with('image')->where('user_id', '!=', $user_id)
+        $products = Product::with(['user', 'image'])->where('user_id', '!=', $user_id)
+            ->whereHas('user', function ($queries) {
+                $queries->where('isBlocked', 0); // Check if the associated user is not blocked
+            })
             ->whereIn('category_id', function ($query) use ($categoryRecommendations) {
                 $query->select('id')
                     ->from('categories')
