@@ -58,24 +58,6 @@ class ViewProductController extends Controller
                     ->orWhere('District', 'like', '%' . $searchTerm . '%')
                     ->orWhere('Municipality', 'like', '%' . $searchTerm . '%');
             });
-            if ($user_id) {
-                $userRecommend = recommendation::where('user_id', $user_id)->get();
-                $categoryExists = false;
-                foreach ($userRecommend as $recommendation_data) {
-                    if ($recommendation_data->category_name === $searchTerm) {
-                        $recommendation_data->count = $recommendation_data->count + 1;
-                        $recommendation_data->save();
-                        $categoryExists = true;
-                    }
-                }
-                if (!$categoryExists) {
-                    $recommend = new recommendation();
-                    $recommend->user_id = $user_id;
-                    $recommend->category_name = $searchTerm;
-                    $recommend->count = 1;
-                    $recommend->save();
-                }
-            }
         }
         if ($category) {
             $query->whereHas('category', function ($q) use ($category) {
