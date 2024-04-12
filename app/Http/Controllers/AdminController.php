@@ -27,9 +27,9 @@ class AdminController extends Controller
         $customers = user::where('id', '!=', $user_id)->get();
         return response()->json(['customers' => $customers]);
     }
-    public function blockCustomers(Request $request)
+    public function blockCustomers($id)
     {
-        $user_id = $request->id;
+        $user_id = $id;
         $user = user::find($user_id);
         if ($user->isBlocked == 1) {
             $user->isBlocked = 0;
