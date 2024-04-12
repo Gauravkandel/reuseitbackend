@@ -38,6 +38,7 @@ class AdminController extends Controller
             return response()->json(['message', "Has been Unblocked"]);
         } else {
             $user->isBlocked = 1;
+            $user->save();
             return response()->json(['message', "Has been blocked"]);
         }
     }
