@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\product;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
@@ -68,5 +69,19 @@ class AdminController extends Controller
         return response()->json([
             "customersanalytics" => $userdata
         ]);
+    }
+    public function pieadminCategory()
+    {
+        $user = auth()->user();
+        $pieDetails = product::with('category')->all();
+        // Group products by category ID and calculate the count for each category
+        $categoryCounts = $pieDetails->groupBy('category_id')->map(function ($products) {
+            return [
+                'name' => $products->first()->category->category_name,
+                'value' => $products->count()
+            ];
+        })->values()->all();
+
+        return response()->json(["category_names" => $categoryCounts]);
     }
 }

@@ -107,6 +107,7 @@ Route::get("/getadmindash", [AdminController::class, "UsersInfo"])->middleware([
 Route::get("/getallcustomers", [AdminController::class, "getallCustomers"])->middleware(['auth:api', 'isAdmin']);
 Route::get("/blockcustomers/{id}", [AdminController::class, "blockCustomers"])->middleware(['auth:api', 'isAdmin']);
 Route::get("/customersanalytics", [AdminController::class, "customersAnalytics"])->middleware(['auth:api', 'isAdmin']);
+Route::get("/pieadmincategory", [AdminController::class, "pieadminCategory"])->middleware(['auth:api', 'isAdmin']);
 Route::get('/messages/{senderId}/{receiverId}', [ChatController::class, 'getMessages']);
 //forgot Password
 Route::post("/forgotPassword", [ForgotPasswordController::class, "sendResetLinkEmail"]);
