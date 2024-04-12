@@ -16,7 +16,16 @@ class ViewProductController extends Controller
     {
         $page = $request->query('page', 1);
         $limit = $request->query('limit', 10);
-        $items = product::with(['category', 'image'])->skip(($page - 1) * $limit)->where('status', 0)->inRandomOrder()->take($limit)->get();
+        $items = Product::with(['user', 'category', 'image'])
+            ->whereHas('user', function ($query) {
+                $query->where('isBlocked', 0); // Check if the associated user is not blocked
+            })
+            ->where('status', 0)
+            ->inRandomOrder()
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
         //pagination starts 1 to 10 and so on
         return response()->json($items);
     }
