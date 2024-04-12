@@ -32,6 +32,10 @@ class AuthController extends Controller
     public function login()
     {
         $credentials = request(['email', 'password']);
+        $userdata = User::where('email', $credentials['email'])->first();
+        if ($userdata->isBlocked == 1) {
+            return response()->json(['error' => 'You are blocked by admin to access the site'], 401);
+        }
         if (!$token = auth()->attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
             // Check if the email exists in the database
             $user = User::where('email', $credentials['email'])->first();
